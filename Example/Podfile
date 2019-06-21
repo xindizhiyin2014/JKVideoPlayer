@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '8.0'
+
+target 'JKVideoPlayer_Example' do
+  pod 'JKVideoPlayer', :path => '../'
+
+  target 'JKVideoPlayer_Tests' do
+    inherit! :search_paths
+
+    pod 'Kiwi'
+  end
+end
