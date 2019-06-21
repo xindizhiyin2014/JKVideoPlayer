@@ -1,0 +1,23 @@
+PODS:
+  - JKVideoPlayer (0.1.0)
+  - Kiwi (3.0.0)
+
+DEPENDENCIES:
+  - JKVideoPlayer (from `../`)
+  - Kiwi
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Kiwi
+
+EXTERNAL SOURCES:
+  JKVideoPlayer:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  JKVideoPlayer: 74f4af8bad82a34148aa872cddfd098a95bd69da
+  Kiwi: fbeafef0f00e4d8f7dcb3420a4930afe70af77f7
+
+PODFILE CHECKSUM: 06e222b72d9fb349023ff339308aa8676d4ea779
+
+COCOAPODS: 1.7.2

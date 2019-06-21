@@ -11,6 +11,8 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Requirements
 
+## Explain
+ JKVideoPlayer is depend on SJBaseVideoPlayer,it modified for my own need. so first we must thank for the author of SJBaseVideoPlayer.
 ## Installation
 
 JKVideoPlayer is available through [CocoaPods](https://cocoapods.org). To install
@@ -22,7 +24,7 @@ pod 'JKVideoPlayer'
 
 ## Author
 
-xindizhiyin2014, jack18@same.com
+xindizhiyin2014, 929097264@qq.com
 
 ## License
 
