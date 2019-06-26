@@ -10,15 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-UIKIT_EXTERN NSString *const SJVolBrigControlBrightnessText;
 
-@class UIImage;
 
 @interface SJDeviceVolumeAndBrightnessManagerResourceLoader : NSObject
-
-+ (UIImage * __nullable)imageNamed:(NSString *)name;
-
-+ (NSString *)bundleComponentWithImageName:(NSString *)imageName;
 
 + (NSString *)localizedStringForKey:(NSString *)key;
 

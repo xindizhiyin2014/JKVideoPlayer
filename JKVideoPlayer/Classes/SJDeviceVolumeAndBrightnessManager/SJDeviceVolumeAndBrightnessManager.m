@@ -21,6 +21,7 @@
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
+#import <JKSandBoxManager/JKSandBoxManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 static NSNotificationName const SJDeviceVolumeDidChangeNotification = @"SJDeviceVolumeDidChangeNotification";
@@ -141,8 +142,8 @@ static NSNotificationName const SJDeviceBrightnessDidChangeNotification = @"SJDe
     if ( !_brightnessView ) {
         SJDeviceBrightnessView *brightnessView = [SJDeviceBrightnessView new];
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            UIImage *image = [SJDeviceVolumeAndBrightnessManagerResourceLoader imageNamed:@"sj_video_player_brightness"];
-            NSString *brightnessText = [SJDeviceVolumeAndBrightnessManagerResourceLoader localizedStringForKey:SJVolBrigControlBrightnessText];
+            UIImage *image = [JKSandBoxManager imageWithName:@"sj_video_player_brightness" podName:@"JKVideoPlayer"];
+            NSString *brightnessText = [SJDeviceVolumeAndBrightnessManagerResourceLoader localizedStringForKey:@"SJVolBrigControlBrightnessText"];
             dispatch_async(dispatch_get_main_queue(), ^{
                 brightnessView.image = image;
                 brightnessView.titleLabel.text = brightnessText;

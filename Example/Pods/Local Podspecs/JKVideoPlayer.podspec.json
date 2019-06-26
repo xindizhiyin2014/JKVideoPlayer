@@ -1,6 +1,6 @@
 {
   "name": "JKVideoPlayer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "summary": "this is a video player",
   "description": "this is a video player,it will update with the need.",
   "homepage": "https://github.com/xindizhiyin2014/JKVideoPlayer",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/xindizhiyin2014/JKVideoPlayer.git",
-    "tag": "0.1.0"
+    "tag": "0.1.1"
   },
   "platforms": {
     "ios": "8.0"
@@ -27,6 +27,9 @@
 
     ],
     "Masonry": [
+
+    ],
+    "JKSandBoxManager": [
 
     ]
   }

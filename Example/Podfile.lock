@@ -1,5 +1,7 @@
 PODS:
-  - JKVideoPlayer (0.1.0):
+  - JKSandBoxManager (0.1.6.4)
+  - JKVideoPlayer (0.1.1):
+    - JKSandBoxManager
     - Masonry
     - Reachability
     - SJUIKit
@@ -51,6 +53,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - JKSandBoxManager
     - Kiwi
     - Masonry
     - MJRefresh
@@ -62,7 +65,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  JKVideoPlayer: 2c3838e3eb193b5a1e5726b4c9f8d4233108ddde
+  JKSandBoxManager: 82c9f56f87f0093dd010348748e11bbe88384794
+  JKVideoPlayer: 244f102dea3e2d2573652d1e46396aa653cc2f5f
   Kiwi: fbeafef0f00e4d8f7dcb3420a4930afe70af77f7
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
