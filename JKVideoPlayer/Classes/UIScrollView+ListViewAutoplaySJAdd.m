@@ -291,10 +291,4 @@ static void sj_playAsset(UIScrollView *scrollView, NSIndexPath *indexPath, BOOL 
     if ( animated ) sj_exeAnima(scrollView, indexPath, [scrollView sj_autoplayConfig].animationType);
 }
 
-
-@implementation UIScrollView (SJAutoplayDeprecated)
-- (void)sj_needPlayNextAsset __deprecated_msg("use `sj_playNextVisibleAsset`") {
-    [self sj_playNextVisibleAsset];
-}
-@end
 NS_ASSUME_NONNULL_END

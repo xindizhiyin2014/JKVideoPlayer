@@ -54,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) UIView *view;
 @property (nonatomic, strong, null_resettable) AVLayerVideoGravity videoGravity;
+
+@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 - (nullable __kindof UIViewController *)atViewController;
 
 // - Control Layer Delegate -
@@ -657,36 +659,4 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, null_resettable) id<SJBaseVideoPlayerStatistics> statistics;
 @end
 
-
-
-#pragma mark - 已弃用
-
-@interface SJBaseVideoPlayer (Deprecated)
-@property (nonatomic, copy, nullable) void(^playDidToEnd)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `playDidToEndExeBlock`");
-@property (nonatomic, readonly) BOOL playOnCell __deprecated_msg("use `isPlayOnScrollView`");
-@property (nonatomic, readonly) BOOL scrollIntoTheCell __deprecated_msg("use `isScrollAppeared`");
-- (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler __deprecated_msg("use `seekToTime:completionHandler:`"); // unit is sec. 单位是秒.
-@property (nonatomic, readonly) BOOL controlViewDisplayed __deprecated_msg("use `controlLayerIsAppeared`");
-@property (nonatomic, copy, nullable) void(^controlViewDisplayStatus)(__kindof SJBaseVideoPlayer *player, BOOL displayed) __deprecated_msg("use `controlLayerAppearStateChanged`");
-@property (nonatomic, copy, nullable) void(^willRotateScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewWillRotateExeBlock`");
-@property (nonatomic, copy, nullable) void(^rotatedScreen)(__kindof SJBaseVideoPlayer *player, BOOL isFullScreen) __deprecated_msg("use `viewDidRotateExeBlock`");
-@property (nonatomic, strong, nullable) UIImage *placeholder __deprecated_msg("use `player.placeholderImageView`");
-@property (nonatomic, readonly) SJVideoPlayerPlayState state __deprecated_msg("use `player.playStatus`");
-@property (nonatomic) BOOL playFailedToKeepAppearState __deprecated;
-@property (nonatomic, copy, nullable) void(^controlLayerAppearStateChanged)(__kindof SJBaseVideoPlayer *player, BOOL state) __deprecated_msg("use `controlLayerAppearStateDidChangeExeBlock`");
-@property (nonatomic) BOOL controlLayerAppeared __deprecated_msg("use `controlLayerIsAppeared`");
-@property (nonatomic) BOOL enableControlLayerDisplayController __deprecated_msg("use `disabledControlLayerAppearManager`");
-@property (nonatomic, copy, nullable) void(^fitOnScreenWillChangeExeBlock)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `fitOnScreenWillBeginExeBlock`");
-@property (nonatomic, copy, nullable) void(^fitOnScreenDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `fitOnScreenDidEndExeBlock`");
-@property (nonatomic, getter=isAutoPlay) BOOL autoPlay __deprecated_msg("use `autoPlayWhenPlayStatusIsReadyToPlay`");
-@property (nonatomic, copy, nullable) void(^rateChanged)(__kindof SJBaseVideoPlayer *player) __deprecated_msg("use `rateDidChangeExeBlock`");
-@property (nonatomic) SJDisablePlayerGestureTypes disableGestureTypes __deprecated_msg("use `disabledGestures`");
-@property (nonatomic) float volume __deprecated_msg("use `deviceVolume`");
-@property (nonatomic) float brightness __deprecated_msg("use `deviceBrightness`");
-@property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *videoPlayer);
-- (void)playWithURL:(NSURL *)URL; // 不再建议使用, 请使用`URLAsset`进行初始化
-@property (nonatomic, strong, nullable) NSURL *assetURL;
-@property (nonatomic, copy, nullable) void(^presentationSize)(__kindof SJBaseVideoPlayer *videoPlayer, CGSize size) __deprecated_msg("use `presentationSizeDidChangeExeBlock`");
-- (void)switchVideoDefinitionByURL:(NSURL *)URL; // 切换清晰度, 推荐使用 `switchVideoDefinition:`
-@end
 NS_ASSUME_NONNULL_END

@@ -1,15 +1,15 @@
 {
   "name": "JKVideoPlayer",
   "version": "0.1.0",
-  "summary": "A short description of JKVideoPlayer.",
-  "description": "TODO: Add long description of the pod here.",
+  "summary": "this is a video player",
+  "description": "this is a video player,it will update with the need.",
   "homepage": "https://github.com/xindizhiyin2014/JKVideoPlayer",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
   },
   "authors": {
-    "xindizhiyin2014": "jack18@same.com"
+    "xindizhiyin2014": "929097264@qq.com"
   },
   "source": {
     "git": "https://github.com/xindizhiyin2014/JKVideoPlayer.git",
@@ -18,5 +18,16 @@
   "platforms": {
     "ios": "8.0"
   },
-  "source_files": "JKVideoPlayer/Classes/**/*"
+  "source_files": "JKVideoPlayer/Classes/**/*",
+  "dependencies": {
+    "SJUIKit": [
+
+    ],
+    "Reachability": [
+
+    ],
+    "Masonry": [
+
+    ]
+  }
 }

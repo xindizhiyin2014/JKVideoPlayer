@@ -1,6 +1,49 @@
 PODS:
-  - JKVideoPlayer (0.1.0)
+  - JKVideoPlayer (0.1.0):
+    - Masonry
+    - Reachability
+    - SJUIKit
   - Kiwi (3.0.0)
+  - Masonry (1.1.0)
+  - MJRefresh (3.2.0)
+  - Reachability (3.2)
+  - SJUIKit (0.0.0.32):
+    - SJUIKit/AsyncLoad (= 0.0.0.32)
+    - SJUIKit/AttributesFactory (= 0.0.0.32)
+    - SJUIKit/Base (= 0.0.0.32)
+    - SJUIKit/CornerMask (= 0.0.0.32)
+    - SJUIKit/Date (= 0.0.0.32)
+    - SJUIKit/ObserverHelper (= 0.0.0.32)
+    - SJUIKit/Other (= 0.0.0.32)
+    - SJUIKit/Queues (= 0.0.0.32)
+    - SJUIKit/Refresh (= 0.0.0.32)
+    - SJUIKit/Thread (= 0.0.0.32)
+    - SJUIKit/UIMaker (= 0.0.0.32)
+  - SJUIKit/AsyncLoad (0.0.0.32):
+    - SJUIKit/CornerMask
+  - SJUIKit/AttributesFactory (0.0.0.32):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.32)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.32)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.32)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.32)
+  - SJUIKit/Base (0.0.0.32):
+    - SJUIKit/Base/Core (= 0.0.0.32)
+    - SJUIKit/ObserverHelper
+  - SJUIKit/Base/Core (0.0.0.32):
+    - SJUIKit/ObserverHelper
+  - SJUIKit/CornerMask (0.0.0.32):
+    - SJUIKit/ObserverHelper
+  - SJUIKit/Date (0.0.0.32)
+  - SJUIKit/ObserverHelper (0.0.0.32)
+  - SJUIKit/Other (0.0.0.32):
+    - SJUIKit/Date
+  - SJUIKit/Queues (0.0.0.32)
+  - SJUIKit/Refresh (0.0.0.32):
+    - MJRefresh
+  - SJUIKit/Thread (0.0.0.32)
+  - SJUIKit/UIMaker (0.0.0.32):
+    - SJUIKit/UIMaker/Core (= 0.0.0.32)
+  - SJUIKit/UIMaker/Core (0.0.0.32)
 
 DEPENDENCIES:
   - JKVideoPlayer (from `../`)
@@ -9,14 +52,22 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Kiwi
+    - Masonry
+    - MJRefresh
+    - Reachability
+    - SJUIKit
 
 EXTERNAL SOURCES:
   JKVideoPlayer:
     :path: "../"
 
 SPEC CHECKSUMS:
-  JKVideoPlayer: 74f4af8bad82a34148aa872cddfd098a95bd69da
+  JKVideoPlayer: 2c3838e3eb193b5a1e5726b4c9f8d4233108ddde
   Kiwi: fbeafef0f00e4d8f7dcb3420a4930afe70af77f7
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  SJUIKit: 77fc2857b2322b950597dec7f39ceea12d4bf2b9
 
 PODFILE CHECKSUM: 06e222b72d9fb349023ff339308aa8676d4ea779
 

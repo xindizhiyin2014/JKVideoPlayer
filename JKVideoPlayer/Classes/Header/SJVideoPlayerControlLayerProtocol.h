@@ -55,7 +55,8 @@ SJPlaybackControlDelegate;
     SJAppActivityControlDelegate,
     SJFitOnScreenControlDelegate,
     SJSwitchVideoDefinitionControlDelegate,
-    SJPlaybackControlDelegate
+    SJPlaybackControlDelegate,
+    SJPlayStatusObserver
 >
 @required
 /// This method will be called when the control layer needs to be appear.
@@ -81,9 +82,6 @@ SJPlaybackControlDelegate;
 /// 当滚动scrollView时, 播放器即将消失时会回调这个方法
 - (void)videoPlayerWillDisappearInScrollView:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
-// deprecated methods
-
-- (BOOL)controlLayerDisappearCondition __deprecated_msg("use `controlLayerOfVideoPlayerCanAutomaticallyDisappear:`");
 @end
 
 
@@ -115,10 +113,6 @@ SJPlaybackControlDelegate;
 /// 获取到视频宽高的回调
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer presentationSize:(CGSize)size;
 
-
-// deprecated methods
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer stateChanged:(SJVideoPlayerPlayState)state __deprecated_msg("已弃用, 请使用`videoPlayer:statusDidChanged:`;");
 @end
 
 
@@ -139,12 +133,6 @@ SJPlaybackControlDelegate;
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer bufferStatusDidChange:(SJPlayerBufferStatus)bufferStatus;
 
-// deprecated methods
-
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer loadedTimeProgress:(float)progress __deprecated_msg("use `videoPlayer:bufferTimeDidChange:`");
-- (void)startLoading:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `videoPlayer:bufferStatusDidChange:`");
-- (void)cancelLoading:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `videoPlayer:bufferStatusDidChange:`");
-- (void)loadCompletion:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `videoPlayer:bufferStatusDidChange:`");
 @end
 
 
@@ -186,13 +174,6 @@ SJPlaybackControlDelegate;
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer panGestureTriggeredInTheHorizontalDirection:(SJPanGestureRecognizerState)state progressTime:(NSTimeInterval)progressTime;
 
-// deprecated methods
-
-- (BOOL)triggerGesturesCondition:(CGPoint)location __deprecated_msg("use `videoPlayer:gestureRecognizerShouldTrigger:location:`");
-- (void)horizontalDirectionWillBeginDragging:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `videoPlayer:panGestureTriggeredInTheHorizontalDirection:progressTime:`");
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidMove:(CGFloat)progress __deprecated_msg("use `videoPlayer:panGestureTriggeredInTheHorizontalDirection:progressTime:`");
-- (void)horizontalDirectionDidEndDragging:(__kindof SJBaseVideoPlayer *)videoPlayer __deprecated_msg("use `videoPlayer:panGestureTriggeredInTheHorizontalDirection:progressTime:`");
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer horizontalDirectionDidDrag:(CGFloat)translation __deprecated_msg("use `videoPlayer:horizontalDirectionDidMove:`;");
 @end
 
 

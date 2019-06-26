@@ -37,8 +37,4 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setSj_currentPlayingIndexPath:(nullable NSIndexPath *)sj_currentPlayingIndexPath;
 @end
 
-
-@interface UIScrollView (SJAutoplayDeprecated)
-- (void)sj_needPlayNextAsset __deprecated_msg("use `sj_playNextVisibleAsset`");
-@end
 NS_ASSUME_NONNULL_END

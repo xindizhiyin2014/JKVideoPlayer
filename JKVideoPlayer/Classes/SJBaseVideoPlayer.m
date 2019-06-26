@@ -110,7 +110,7 @@ typedef struct _SJPlayerControlInfo {
 } _SJPlayerControlInfo;
 
 @interface SJBaseVideoPlayer ()
-@property (nonatomic) SJVideoPlayerPlayState state __deprecated_msg("已弃用, 请使用`playStatus`");
+
 @property (nonatomic) SJVideoPlayerPlayStatus playStatus;
 @property (nonatomic) _SJPlayerControlInfo *controlInfo;
 
@@ -388,14 +388,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:statusDidChanged:)] ) {
         [self.controlLayerDelegate videoPlayer:self statusDidChanged:playStatus];
     }
-    else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:stateChanged:)] ) {
-            [self.controlLayerDelegate videoPlayer:self stateChanged:self.state];
-        }
-#pragma clang diagnostic pop
-    }
+    
     
     if ( [self playStatus_isInactivity_ReasonPlayEnd] ) {
         if ( self.playDidToEndExeBlock ) {
@@ -562,41 +555,6 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     _controlInfo->rotation.able = [able boolValue];
 }
 
-- (SJVideoPlayerPlayState)state {
-    switch ( self.playStatus ) {
-        case SJVideoPlayerPlayStatusUnknown:
-            return SJVideoPlayerPlayState_Unknown;
-        case SJVideoPlayerPlayStatusPrepare:
-        case SJVideoPlayerPlayStatusReadyToPlay:
-            return SJVideoPlayerPlayState_Prepare;
-        case SJVideoPlayerPlayStatusPlaying:
-            return SJVideoPlayerPlayState_Playing;
-        case SJVideoPlayerPlayStatusPaused: {
-            switch ( self.pausedReason ) {
-                case SJVideoPlayerPausedReasonUnknown: break;
-                case SJVideoPlayerPausedReasonBuffering:
-                    return SJVideoPlayerPlayState_Buffing;
-                case SJVideoPlayerPausedReasonPause:
-                    return SJVideoPlayerPlayState_Paused;
-                case SJVideoPlayerPausedReasonSeeking:
-                    return SJVideoPlayerPlayState_Buffing;
-            }
-        }
-            break;
-        case SJVideoPlayerPlayStatusInactivity:
-            switch ( self.inactivityReason ) {
-                case SJVideoPlayerPausedReasonUnknown: break;
-                case SJVideoPlayerInactivityReasonPlayEnd:
-                    return SJVideoPlayerPlayState_PlayEnd;
-                case SJVideoPlayerInactivityReasonPlayFailed:
-                    return SJVideoPlayerPlayState_PlayFailed;
-                case SJVideoPlayerInactivityReasonNotReachableAndPlaybackStalled:
-                    return SJVideoPlayerPlayState_PlayFailed;
-            }
-            break;
-    }
-    return SJVideoPlayerPlayState_Unknown;
-}
 
 - (UITapGestureRecognizer *)lockStateTapGesture {
     if ( _lockStateTapGesture ) return _lockStateTapGesture;
@@ -1164,12 +1122,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:bufferTimeDidChange:)] ) {
         [self.controlLayerDelegate videoPlayer:self bufferTimeDidChange:bufferLoadedTime];
     }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    else if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:loadedTimeProgress:)] ) {
-        [self.controlLayerDelegate videoPlayer:self loadedTimeProgress:controller.bufferLoadedTime / controller.duration];
-    }
-#pragma clang diagnostic pop
+
 
 }
 
@@ -1233,26 +1186,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:bufferStatusDidChange:)] ) {
         [self.controlLayerDelegate videoPlayer:self bufferStatusDidChange:bufferStatus];
     }
-    else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        switch ( bufferStatus ) {
-            case SJPlayerBufferStatusUnknown: break;
-            case SJPlayerBufferStatusUnplayable: {
-                if ( [self.controlLayerDelegate respondsToSelector:@selector(startLoading:)] ) {
-                    [self.controlLayerDelegate startLoading:self];
-                }
-            }
-                break;
-            case SJPlayerBufferStatusPlayable: {
-                if ( [self.controlLayerDelegate respondsToSelector:@selector(loadCompletion:)] ) {
-                    [self.controlLayerDelegate loadCompletion:self];
-                }
-            }
-                break;
-        }
-#pragma clang diagnostic pop
-    }
+    
 }
 @end
 
@@ -1618,13 +1552,6 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
             if ( ![self.controlLayerDelegate videoPlayer:self gestureRecognizerShouldTrigger:type location:location] )
                 return NO;
         }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        else if ( [self.controlLayerDelegate respondsToSelector:@selector(triggerGesturesCondition:)] ) {
-            if ( ![self.controlLayerDelegate triggerGesturesCondition:location] )
-                return NO;
-        }
-#pragma clang diagnostic pop
         
         if ( self.gestureRecognizerShouldTrigger && !self.gestureRecognizerShouldTrigger(self, type, location) ) {
             return NO;
@@ -1662,12 +1589,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
                         }
                         
                         self.controlInfo->pan.offsetTime = self.currentTime;
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                        if ( [self.controlLayerDelegate respondsToSelector:@selector(horizontalDirectionWillBeginDragging:)] ) {
-                            [self.controlLayerDelegate horizontalDirectionWillBeginDragging:self];
-                        }
-                    #pragma clang diagnostic pop
+                   
                     }
                         break;
                         /// 垂直
@@ -1689,16 +1611,6 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
                         else if ( offsetTime < 0 ) offsetTime = 0;
                         self.controlInfo->pan.offsetTime = offsetTime;
                         
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                        if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidMove:)] ) {
-                            CGFloat progress = offsetTime / totalTime;
-                            [self.controlLayerDelegate videoPlayer:self horizontalDirectionDidMove:progress];
-                        }
-                        else if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:horizontalDirectionDidDrag:)] ) {
-                            [self.controlLayerDelegate videoPlayer:self horizontalDirectionDidDrag:add];
-                        }
-                    #pragma clang diagnostic pop
                     }
                         break;
                         /// 垂直
@@ -1726,12 +1638,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
             case SJPanGestureRecognizerStateEnded: {
                 switch ( direction ) {
                     case SJPanGestureMovingDirection_H: {
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                        if ( [self.controlLayerDelegate respondsToSelector:@selector(horizontalDirectionDidEndDragging:)] ) {
-                            [self.controlLayerDelegate horizontalDirectionDidEndDragging:self];
-                        }
-                    #pragma clang diagnostic pop
+                    
                     }
                         break;
                     case SJPanGestureMovingDirection_V: { }
@@ -1812,15 +1719,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
             if ( ![self.controlLayerDelegate controlLayerOfVideoPlayerCanAutomaticallyDisappear:self] ) {
                 return NO;
             }
-        }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        else if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerDisappearCondition)] ) {
-            if ( !self.controlLayerDelegate.controlLayerDisappearCondition )
-                return NO;
-        }
-#pragma clang diagnostic pop
-        
+        }        
         if ( self.canAutomaticallyDisappear && !self.canAutomaticallyDisappear(self) ) {
             return NO;
         }
@@ -2670,178 +2569,6 @@ static id<SJBaseVideoPlayerStatistics> _statistics;
     
     if ( self.playerViewWillDisappearExeBlock )
         self.playerViewWillDisappearExeBlock(self);
-}
-@end
-
-
-#pragma mark -
-
-@implementation SJBaseVideoPlayer (Deprecated)
-- (void)setPlayDidToEnd:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playDidToEnd __deprecated_msg("use `playDidToEndExeBlock`") {
-    self.playDidToEndExeBlock = playDidToEnd;
-}
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))playDidToEnd __deprecated_msg("use `playDidToEndExeBlock`") {
-    return self.playDidToEndExeBlock;
-}
-
-- (BOOL)playOnCell __deprecated_msg("use `isPlayOnScrollView`") {
-    return [self isPlayOnScrollView];
-}
-
-- (BOOL)scrollIntoTheCell __deprecated_msg("use `isScrollAppeared`") {
-    return self.isScrollAppeared;
-}
-
-- (void)jumpedToTime:(NSTimeInterval)secs completionHandler:(void (^ __nullable)(BOOL finished))completionHandler __deprecated_msg("use `seekToTime:completionHandler:`") {
-    [self seekToTime:secs completionHandler:completionHandler];
-}
-
-- (BOOL)controlViewDisplayed __deprecated_msg("use `controlLayerIsAppeared`") {
-    return self.controlLayerAppeared;
-}
-
-- (void)setControlViewDisplayStatus:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus __deprecated_msg("use `controlLayerAppearStateChanged`") {
-    self.controlLayerAppearStateChanged = controlViewDisplayStatus;
-}
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlViewDisplayStatus __deprecated_msg("use `controlLayerAppearStateChanged`") {
-    return self.controlLayerAppearStateChanged;
-}
-- (void)setWillRotateScreen:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))willRotateScreen __deprecated_msg("use `viewWillRotateExeBlock`") {
-    self.viewWillRotateExeBlock = willRotateScreen;
-}
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))willRotateScreen __deprecated_msg("use `viewWillRotateExeBlock`") {
-    return self.viewWillRotateExeBlock;
-}
-
-- (void)setRotatedScreen:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))rotatedScreen  __deprecated_msg("use `viewDidRotateExeBlock`") {
-    self.viewDidRotateExeBlock = rotatedScreen;
-}
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))rotatedScreen  __deprecated_msg("use `viewDidRotateExeBlock`") {
-    return self.viewDidRotateExeBlock;
-}
-
-- (void)setPlaceholder:(nullable UIImage *)placeholder __deprecated_msg("use `player.placeholderImageView`") {
-    self.placeholderImageView.image = placeholder;
-}
-
-- (nullable UIImage *)placeholder __deprecated_msg("use `player.placeholderImageView`") {
-    return self.placeholderImageView.image;
-}
-
-- (void)setPlayFailedToKeepAppearState:(BOOL)playFailedToKeepAppearState __deprecated { }
-- (BOOL)playFailedToKeepAppearState __deprecated {
-    return NO;
-}
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateChanged __deprecated_msg("use `controlLayerAppearStateDidChangeExeBlock`") {
-    return self.controlLayerAppearStateDidChangeExeBlock;
-}
-
-- (void)setControlLayerAppearStateChanged:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, BOOL))controlLayerAppearStateChanged __deprecated_msg("use `controlLayerAppearStateDidChangeExeBlock`") {
-    self.controlLayerAppearStateDidChangeExeBlock = controlLayerAppearStateChanged;
-}
-
-- (void)setControlLayerAppeared:(BOOL)controlLayerAppeared __deprecated_msg("use `controlLayerIsAppeared`") {
-    self.controlLayerIsAppeared = controlLayerAppeared;
-}
-
-- (BOOL)controlLayerAppeared __deprecated_msg("use `controlLayerIsAppeared`") {
-    return self.controlLayerIsAppeared;
-}
-
-- (BOOL)enableControlLayerDisplayController __deprecated_msg("use `disabledControlLayerAppearManager`") {
-    return !self.controlLayerAppearManager.disabled;
-}
-
-- (void)setEnableControlLayerDisplayController:(BOOL)enableControlLayerDisplayController __deprecated_msg("use `disabledControlLayerAppearManager`") {
-    self.controlLayerAppearManager.disabled = !enableControlLayerDisplayController;
-}
-
-- (void)setFitOnScreenWillChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock __deprecated_msg("use `fitOnScreenWillBeginExeBlock`") {
-    self.fitOnScreenWillBeginExeBlock = fitOnScreenWillChangeExeBlock;
-}
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenWillChangeExeBlock __deprecated_msg("use `fitOnScreenWillBeginExeBlock`") {
-    return self.fitOnScreenWillBeginExeBlock;
-}
-
-- (void)setFitOnScreenDidChangeExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock __deprecated_msg("use `fitOnScreenDidEndExeBlock`") {
-    self.fitOnScreenDidEndExeBlock = fitOnScreenDidChangeExeBlock;
-}
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))fitOnScreenDidChangeExeBlock __deprecated_msg("use `fitOnScreenDidEndExeBlock`") {
-    return self.fitOnScreenDidEndExeBlock;
-}
-
-- (void)setAutoPlay:(BOOL)autoPlay __deprecated_msg("use `autoPlayWhenPlayStatusIsReadyToPlay`") {
-    self.autoPlayWhenPlayStatusIsReadyToPlay = autoPlay;
-}
-- (BOOL)isAutoPlay __deprecated_msg("use `autoPlayWhenPlayStatusIsReadyToPlay`") {
-    return self.autoPlayWhenPlayStatusIsReadyToPlay;
-}
-
-- (void)setRateChanged:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))rateChanged __deprecated_msg("use `rateDidChangeExeBlock`") {
-    self.rateDidChangeExeBlock = rateChanged;
-}
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))rateChanged __deprecated_msg("use `rateDidChangeExeBlock`") {
-    return self.rateDidChangeExeBlock;
-}
-
-- (void)setDisableGestureTypes:(SJDisablePlayerGestureTypes)disableGestureTypes __deprecated_msg("use `disabledGestures`") {
-    self.disabledGestures = (NSInteger)disableGestureTypes;
-}
-- (SJDisablePlayerGestureTypes)disableGestureTypes __deprecated_msg("use `disabledGestures`") {
-    return (NSInteger)self.disabledGestures;
-}
-
-- (void)setVolume:(float)volume __deprecated_msg("use `deviceVolume`") {
-    self.deviceVolume = volume;
-}
-- (float)volume __deprecated_msg("use `deviceVolume`") {
-    return self.deviceVolume;
-}
-
-- (void)setBrightness:(float)brightness __deprecated_msg("use `deviceBrightness`") {
-    self.deviceBrightness = brightness;
-}
-- (float)brightness __deprecated_msg("use `deviceBrightness`") {
-    return self.deviceBrightness;
-}
-
-- (void)setPlayStatusDidChangeExeBlock:(void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock {
-    objc_setAssociatedObject(self, @selector(playStatusDidChangeExeBlock), playStatusDidChangeExeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-- (void (^_Nullable)(__kindof SJBaseVideoPlayer * _Nonnull))playStatusDidChangeExeBlock {
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)playWithURL:(NSURL *)URL {
-    self.assetURL = URL;
-}
-- (void)setAssetURL:(nullable NSURL *)assetURL {
-    self.URLAsset = [[SJVideoPlayerURLAsset alloc] initWithURL:assetURL];
-}
-
-- (nullable NSURL *)assetURL {
-    return self.URLAsset.mediaURL;
-}
-
-- (void)setPresentationSize:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, CGSize))presentationSize __deprecated_msg("use `presentationSizeDidChangeExeBlock`") {
-    __weak typeof(self) _self = self;
-    self.presentationSizeDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull videoPlayer) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( presentationSize ) presentationSize(self, videoPlayer.videoPresentationSize);
-    };
-    objc_setAssociatedObject(self, @selector(presentationSize), presentationSize, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull, CGSize))presentationSize __deprecated_msg("use `presentationSizeDidChangeExeBlock`") {
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)switchVideoDefinitionByURL:(NSURL *)URL {
-    [self switchVideoDefinition:[[SJVideoPlayerURLAsset alloc] initWithURL:URL playModel:_URLAsset.playModel]];
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -71,17 +71,5 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 @end
 
-// deprecated
-
-typedef NS_ENUM(NSUInteger, SJVideoPlayerPlayState) {
-    SJVideoPlayerPlayState_Unknown = 0,
-    SJVideoPlayerPlayState_Prepare,
-    SJVideoPlayerPlayState_Playing,
-    SJVideoPlayerPlayState_Buffing,
-    SJVideoPlayerPlayState_Paused,
-    SJVideoPlayerPlayState_PlayEnd,
-    SJVideoPlayerPlayState_PlayFailed,
-} __deprecated_msg("已弃用, 请使用`SJVideoPlayerPlayStatus`");
-
 NS_ASSUME_NONNULL_END
 #endif /* SJVideoPlayerPlayStatusDefines_h */
