@@ -444,6 +444,13 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
 - (void)setVideoGravity:(AVLayerVideoGravity _Nullable)videoGravity {
     self.playbackController.videoGravity = videoGravity;
+    if (videoGravity == AVLayerVideoGravityResize) {// 非均匀模式。两个维度完全填充至整个视图区域
+        self.placeholderImageView.contentMode = UIViewContentModeScaleAspectFit;
+    }else if (videoGravity == AVLayerVideoGravityResizeAspect){// 等比例填充，直到一个维度到达区域边界
+        self.placeholderImageView.contentMode = UIViewContentModeScaleToFill;
+    }else if (videoGravity == AVLayerVideoGravityResizeAspectFill){// 等比例填充，直到填充满整个视图区域，其中一个维度的部分区域会被裁剪
+        self.placeholderImageView.contentMode = UIViewContentModeScaleAspectFill;
+    }
 }
 
 - (AVLayerVideoGravity)videoGravity {

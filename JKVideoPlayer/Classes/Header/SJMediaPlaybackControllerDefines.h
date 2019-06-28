@@ -33,33 +33,33 @@ typedef AVLayerVideoGravity SJVideoGravity;
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJMediaPlaybackController<NSObject>
 @required
-@property (nonatomic) NSTimeInterval refreshTimeInterval; // default value is 0.5
+@property (nonatomic, assign) NSTimeInterval refreshTimeInterval; // default value is 0.5
 @property (nonatomic, strong, readonly, nullable) NSError *error;
 @property (nonatomic, weak, nullable) id<SJMediaPlaybackControllerDelegate> delegate;
 
-@property (nonatomic, readonly) SJMediaPlaybackType playbackType;
+@property (nonatomic, assign, readonly) SJMediaPlaybackType playbackType;
 @property (nonatomic, strong, readonly) __kindof UIView *playerView;
 @property (nonatomic, strong, nullable) id<SJMediaModelProtocol> media;
 @property (nonatomic, strong) SJVideoGravity videoGravity; // default value is AVLayerVideoGravityResizeAspect
 
 // - status -
-@property (nonatomic, readonly) SJVideoPlayerInactivityReason inactivityReason;
-@property (nonatomic, readonly) SJVideoPlayerPausedReason pausedReason;
-@property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;
-@property (nonatomic, readonly) SJPlayerBufferStatus bufferStatus;
-@property (nonatomic, readonly) SJMediaPlaybackPrepareStatus prepareStatus;
-@property (nonatomic, readonly) NSTimeInterval currentTime;
-@property (nonatomic, readonly) NSTimeInterval duration;
-@property (nonatomic, readonly) NSTimeInterval bufferLoadedTime;
-@property (nonatomic, readonly) CGSize presentationSize;
-@property (nonatomic, readonly, getter=isReadyForDisplay) BOOL readyForDisplay;
+@property (nonatomic, assign, readonly) SJVideoPlayerInactivityReason inactivityReason;
+@property (nonatomic, assign, readonly) SJVideoPlayerPausedReason pausedReason;
+@property (nonatomic, assign, readonly) SJVideoPlayerPlayStatus playStatus;
+@property (nonatomic, assign, readonly) SJPlayerBufferStatus bufferStatus;
+@property (nonatomic, assign, readonly) SJMediaPlaybackPrepareStatus prepareStatus;
+@property (nonatomic, assign, readonly) NSTimeInterval currentTime;
+@property (nonatomic, assign, readonly) NSTimeInterval duration;
+@property (nonatomic, assign, readonly) NSTimeInterval bufferLoadedTime;
+@property (nonatomic, assign, readonly) CGSize presentationSize;
+@property (nonatomic, assign, readonly, getter=isReadyForDisplay) BOOL readyForDisplay;
 
-@property (nonatomic) float volume;
-@property (nonatomic) float rate;
-@property (nonatomic) BOOL mute;
+@property (nonatomic, assign) float volume;
+@property (nonatomic, assign) float rate;
+@property (nonatomic, assign) BOOL mute;
 
-@property (nonatomic, readonly) BOOL isPlayed; ///< 当前media是否调用过play
-@property (nonatomic, readonly, getter=isReplayed) BOOL replayed; ///< 当前media是否调用过replay
+@property (nonatomic, assign, readonly) BOOL isPlayed; ///< 当前media是否调用过play
+@property (nonatomic, assign, readonly, getter=isReplayed) BOOL replayed; ///< 当前media是否调用过replay
 - (void)prepareToPlay;
 - (void)replay;
 - (void)refresh;
@@ -127,12 +127,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// played by URL
 @property (nonatomic, strong, nullable) NSURL *mediaURL;
 
+@property (nonatomic, copy ,nullable) NSURL *mediaCoverURL;///< 封面图
 /// played by other media
 @property (nonatomic, weak, readonly, nullable) id<SJMediaModelProtocol> originMedia;
 
-@property (nonatomic) NSTimeInterval specifyStartTime;
+@property (nonatomic, assign) NSTimeInterval specifyStartTime;
 
-@property (nonatomic) NSTimeInterval playableLimit;
+@property (nonatomic, assign) NSTimeInterval playableLimit;
 @end
 
 @protocol SJAVMediaModelProtocol<SJMediaModelProtocol>
