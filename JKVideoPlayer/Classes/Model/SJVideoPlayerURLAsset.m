@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJVideoPlayerURLAsset
+@synthesize mediaURL,mediaCoverURL,originMedia;
 
 + (instancetype)initWithURL:(NSURL *)url{
     return [self initWithURL:url specifyStartTime:0];
