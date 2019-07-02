@@ -27,10 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
     
     AVAsset *_Nullable asset = [(id)media respondsToSelector:@selector(avAsset)]?[(id)media avAsset]:nil;
     if ( asset ) {
-        player = [[SJAVMediaPlayer alloc] initWithAVAsset:asset specifyStartTime:target.specifyStartTime];
+        player = [SJAVMediaPlayer initWithAVAsset:asset specifyStartTime:target.specifyStartTime];
     }
     else {
-        player = [[SJAVMediaPlayer alloc] initWithURL:target.mediaURL specifyStartTime:target.specifyStartTime];
+        player = [SJAVMediaPlayer initWithURL:target.mediaURL specifyStartTime:target.specifyStartTime];
     }
     
     objc_setAssociatedObject(target, _cmd, player, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

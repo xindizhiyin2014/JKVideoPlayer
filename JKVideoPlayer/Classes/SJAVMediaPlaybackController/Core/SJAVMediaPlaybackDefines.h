@@ -22,10 +22,10 @@ UIKIT_EXTERN NSNotificationName const SJAVMediaLoadedDurationNotification;
 UIKIT_EXTERN NSNotificationName const SJAVMediaItemStatusDidChangeNotification;
 
 @protocol SJAVMediaPlayerProtocol <NSObject>
-- (instancetype)initWithURL:(NSURL *)URL;
-- (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;
-- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime;
-- (instancetype)initWithPlayerItem:(AVPlayerItem *_Nullable)item specifyStartTime:(NSTimeInterval)specifyStartTime;
++ (instancetype)initWithURL:(NSURL *)URL;
++ (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime;
++ (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime;
++ (instancetype)initWithPlayerItem:(AVPlayerItem *_Nullable)item specifyStartTime:(NSTimeInterval)specifyStartTime;
 
 @property (nonatomic) float sj_playbackRate;
 @property (nonatomic) float sj_playbackVolume;

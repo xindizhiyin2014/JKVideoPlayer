@@ -327,7 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
             AVMutableCompositionTrack *audioTrack = [asset addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:0];
             [audioTrack insertTimeRange:sourceRange ofTrack:[source tracksWithMediaType:AVMediaTypeAudio].lastObject atTime:kCMTimeZero error:nil];
             
-            self.player = [[SJAVMediaPlayer alloc] initWithAVAsset:asset specifyStartTime:media.specifyStartTime];
+            self.player = [SJAVMediaPlayer initWithAVAsset:asset specifyStartTime:media.specifyStartTime];
             [self.player sj_setForceDuration:CMTimeGetSeconds(source.duration)];
             [self.player report];
             [self _resetMainPresenterIfNeeded];
