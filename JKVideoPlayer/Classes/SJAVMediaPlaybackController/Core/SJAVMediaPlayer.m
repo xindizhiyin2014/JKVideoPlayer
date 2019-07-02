@@ -83,7 +83,7 @@ inline static bool isFloatZero(float value) {
     return [self initWithPlayerItem:item specifyStartTime:0];
 }
 + (instancetype)initWithPlayerItem:(AVPlayerItem *_Nullable)item specifyStartTime:(NSTimeInterval)specifyStartTime {
-    SJAVMediaPlayer *mediaPlayer = (SJAVMediaPlayer *)[[AVPlayer alloc] initWithPlayerItem:item];
+    SJAVMediaPlayer *mediaPlayer = [[[self class] alloc] initWithPlayerItem:item];
     if ( mediaPlayer ) {
         mediaPlayer->_sj_playbackRate = 1.0;
         mediaPlayer->_sj_controlInfo = (SJAVMediaPlaybackControlInfo *)calloc(1, sizeof(SJAVMediaPlaybackControlInfo));
