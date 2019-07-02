@@ -9,9 +9,13 @@
 #import <AVFoundation/AVFoundation.h>
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJAVMediaPresenter <NSObject>
-- (instancetype)initWithAVPlayer:(AVPlayer *)player;
-- (instancetype)init NS_UNAVAILABLE;
+
 + (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithAVPlayer:(AVPlayer *)player;
+
 @property (nonatomic, strong, readonly, nullable) AVPlayer *player;
 @property (nonatomic, readonly, getter=isReadyForDisplay) BOOL readyForDisplay; // support kvo
 @property (nonatomic, copy, null_resettable) AVLayerVideoGravity videoGravity; // support kvo

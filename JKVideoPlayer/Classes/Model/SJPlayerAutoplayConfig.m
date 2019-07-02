@@ -13,7 +13,7 @@
     NSParameterAssert(playerSuperviewTag != 0);
     NSParameterAssert(autoplayDelegate != nil);
     
-    SJPlayerAutoplayConfig *config = [SJPlayerAutoplayConfig new];
+    SJPlayerAutoplayConfig *config = [[self alloc] init];
     config->_playerSuperviewTag = playerSuperviewTag;
     config->_autoplayDelegate = autoplayDelegate;
     config->_animationType = SJAutoplayScrollAnimationTypeMiddle;

@@ -10,43 +10,43 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJPlayerGestureType) {
     SJPlayerGestureType_SingleTap,
     SJPlayerGestureType_DoubleTap,
     SJPlayerGestureType_Pan,
     SJPlayerGestureType_Pinch,
-} SJPlayerGestureType;
+};
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJPlayerDisabledGestures) {
     SJPlayerDisabledGestures_None,
     SJPlayerDisabledGestures_SingleTap = 1 << 0,
     SJPlayerDisabledGestures_DoubleTap = 1 << 1,
     SJPlayerDisabledGestures_Pan = 1 << 2,
     SJPlayerDisabledGestures_Pinch = 1 << 3,
     SJPlayerDisabledGestures_All = SJPlayerDisabledGestures_SingleTap |
-                                   SJPlayerDisabledGestures_DoubleTap |
-                                   SJPlayerDisabledGestures_Pan |
-                                   SJPlayerDisabledGestures_Pinch,
+    SJPlayerDisabledGestures_DoubleTap |
+    SJPlayerDisabledGestures_Pan |
+    SJPlayerDisabledGestures_Pinch,
     
     SJPlayerDisabledGestures_Pan_H = 1 << 4, // 水平方向
     SJPlayerDisabledGestures_Pan_V = 1 << 5, // 垂直方向
-} SJPlayerDisabledGestures;
+};
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJPanGestureMovingDirection) {
     SJPanGestureMovingDirection_H,
     SJPanGestureMovingDirection_V,
-} SJPanGestureMovingDirection;
+};
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJPanGestureTriggeredPosition) {
     SJPanGestureTriggeredPosition_Left,
     SJPanGestureTriggeredPosition_Right,
-} SJPanGestureTriggeredPosition;
+};
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJPanGestureRecognizerState) {
     SJPanGestureRecognizerStateBegan,
     SJPanGestureRecognizerStateChanged,
     SJPanGestureRecognizerStateEnded,
-} SJPanGestureRecognizerState;
+};
 
 
 @protocol SJPlayerGestureControl <NSObject>
@@ -59,26 +59,16 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy, nullable) void(^panHandler)(id<SJPlayerGestureControl> control, SJPanGestureTriggeredPosition position, SJPanGestureMovingDirection direction, SJPanGestureRecognizerState state, CGPoint translate);
 @property (nonatomic, copy, nullable) void(^pinchHandler)(id<SJPlayerGestureControl> control, CGFloat scale);
 
-@property (nonatomic) SJPlayerDisabledGestures disabledGestures;
+@property (nonatomic, assign) SJPlayerDisabledGestures disabledGestures;
 - (void)cancelGesture:(SJPlayerGestureType)type;
 - (UIGestureRecognizerState)stateOfGesture:(SJPlayerGestureType)type;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
-@property (nonatomic, readonly) SJPanGestureMovingDirection movingDirection;
-@property (nonatomic, readonly) SJPanGestureTriggeredPosition triggeredPosition;
+@property (nonatomic, assign, readonly) SJPanGestureMovingDirection movingDirection;
+@property (nonatomic, assign, readonly) SJPanGestureTriggeredPosition triggeredPosition;
 @end
 
-
-
-typedef NS_ENUM(NSUInteger, SJDisablePlayerGestureTypes) {
-    SJDisablePlayerGestureTypes_None,
-    SJDisablePlayerGestureTypes_SingleTap = 1 << 0,
-    SJDisablePlayerGestureTypes_DoubleTap = 1 << 1,
-    SJDisablePlayerGestureTypes_Pan = 1 << 2,
-    SJDisablePlayerGestureTypes_Pinch = 1 << 3,
-    SJDisablePlayerGestureTypes_All = SJDisablePlayerGestureTypes_SingleTap | SJDisablePlayerGestureTypes_DoubleTap | SJDisablePlayerGestureTypes_Pan | SJDisablePlayerGestureTypes_Pinch,
-} __deprecated_msg("use SJPlayerDisabledGestures");
 NS_ASSUME_NONNULL_END
 
 #endif /* SJPlayerGestureControlProtocol_h */

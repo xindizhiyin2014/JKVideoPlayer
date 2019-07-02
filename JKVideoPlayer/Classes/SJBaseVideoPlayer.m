@@ -302,7 +302,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"0.1.3.3";
+    return @"0.1.3.6";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -385,8 +385,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     printf("%s\n", [self getPlayStatusStr:playStatus].UTF8String);
 #endif
     
-    if ( self.playStatusDidChangeExeBlock )
-        self.playStatusDidChangeExeBlock(self);
+    if ( self.playStatusDidChangeExeBlock ){
+     self.playStatusDidChangeExeBlock(self);
+    }
     
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
     

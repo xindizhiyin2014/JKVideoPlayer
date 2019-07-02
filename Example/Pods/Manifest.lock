@@ -20,7 +20,7 @@ PODS:
     - SDWebImage
   - JKUIHelper/JKTextView (0.1.9.2):
     - SDWebImage
-  - JKVideoPlayer (0.1.3.3):
+  - JKVideoPlayer (0.1.3.6):
     - JKSandBoxManager
     - JKUIHelper
     - Masonry
@@ -93,7 +93,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   JKSandBoxManager: 82c9f56f87f0093dd010348748e11bbe88384794
   JKUIHelper: 0c923b582ca3ad90bb0e8eaebc585275d02b220b
-  JKVideoPlayer: e782a06c2de0338643ed9f75a8f02a638202b288
+  JKVideoPlayer: 135cae5ad687d2962634b2302327dc65676c9456
   Kiwi: fbeafef0f00e4d8f7dcb3420a4930afe70af77f7
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437

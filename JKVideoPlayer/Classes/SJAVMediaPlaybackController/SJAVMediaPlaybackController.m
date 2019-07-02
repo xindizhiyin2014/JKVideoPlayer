@@ -378,9 +378,9 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !media ) return;
     
     [self _definitionSwitchingStatusDidChange:media status:SJMediaPlaybackSwitchDefinitionStatusSwitching];
-    __weak typeof(self) _self = self;
-    _definitionLoader = [[SJAVMediaDefinitionLoader alloc] initWithMedia:media handler:^(SJAVMediaDefinitionLoader * _Nonnull loader, AVPlayerItemStatus status) {
-        __strong typeof(_self) self = _self;
+    @weakify(self);
+    _definitionLoader = [SJAVMediaDefinitionLoader initWithMedia:media handler:^(SJAVMediaDefinitionLoader * _Nonnull loader, AVPlayerItemStatus status) {
+        @strongify(self);
         if ( !self ) return;
         switch ( status ) {
             case AVPlayerItemStatusFailed: {
@@ -395,9 +395,9 @@ NS_ASSUME_NONNULL_BEGIN
                 // present
                 SJAVMediaSubPresenter *presenter = [[SJAVMediaSubPresenter alloc] initWithAVPlayer:loader.player.sj_getAVPlayer];
                 [self.mainPresenter insertSubPresenterToBack:presenter];
-                __weak typeof(self) _self = self;
+                
                 SJKVOObserverToken __block token = sjkvo_observe(presenter, @"readyForDisplay", ^(SJAVMediaSubPresenter *subPresenter, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-                    __strong typeof(_self) self = _self;
+                    @strongify(self);
                     if ( !self ) return;
                     // ready for display
                     if ( [subPresenter isReadyForDisplay] ) {
@@ -452,11 +452,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [[_player sj_getAVAsset] sj_screenshotWithTime:CMTimeMakeWithSeconds(_player.sj_getCurrentPlaybackTime, NSEC_PER_SEC)];
 }
 - (void)screenshotWithTime:(NSTimeInterval)time size:(CGSize)size completion:(nonnull void (^)(id<SJMediaPlaybackController> _Nonnull, UIImage * _Nullable, NSError * _Nullable))block {
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [[_player sj_getAVAsset] sj_screenshotWithTime:time size:size completionHandler:^(AVAsset * _Nonnull a, UIImage * _Nullable image, NSError * _Nullable error) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( block ) block(self, image, error);
+        if ( block ){
+          block(self, image, error);
+        }
     }];
 }
 
@@ -464,19 +466,25 @@ NS_ASSUME_NONNULL_BEGIN
     
     NSURL *exportURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject URLByAppendingPathComponent:@"Export.mp4"];
     [[NSFileManager defaultManager] removeItemAtURL:exportURL error:nil];
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [[_player sj_getAVAsset] sj_exportWithStartTime:beginTime duration:endTime - beginTime toFile:exportURL presetName:presetName progress:^(AVAsset * _Nonnull a, float progress) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( progressBlock ) progressBlock(self, progress);
+        if (progressBlock ){
+           progressBlock(self, progress);
+        }
     } success:^(AVAsset * _Nonnull a, AVAsset * _Nullable sandboxAsset, NSURL * _Nullable fileURL, UIImage * _Nullable thumbImage) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( completionBlock ) completionBlock(self, fileURL, thumbImage);
+        if ( completionBlock ){
+           completionBlock(self, fileURL, thumbImage);
+        }
     } failure:^(AVAsset * _Nonnull a, NSError * _Nullable error) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( failureBlock ) failureBlock(self, error);
+        if ( failureBlock ){
+          failureBlock(self, error);
+        }
     }];
 }
 
@@ -485,19 +493,25 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)generateGIFWithBeginTime:(NSTimeInterval)beginTime duration:(NSTimeInterval)duration maximumSize:(CGSize)maximumSize interval:(float)interval gifSavePath:(nonnull NSURL *)gifSavePath progress:(nonnull void (^)(id<SJMediaPlaybackController> _Nonnull, float))progressBlock completion:(nonnull void (^)(id<SJMediaPlaybackController> _Nonnull, UIImage * _Nonnull, UIImage * _Nonnull))completion failure:(nonnull void (^)(id<SJMediaPlaybackController> _Nonnull, NSError * _Nonnull))failure {
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [[_player sj_getAVAsset] sj_generateGIFWithBeginTime:beginTime duration:duration imageMaxSize:maximumSize interval:interval toFile:gifSavePath progress:^(AVAsset * _Nonnull a, float progress) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( progressBlock ) progressBlock(self, progress);
+        if ( progressBlock ){
+            progressBlock(self, progress);
+        }
     } success:^(AVAsset * _Nonnull a, UIImage * _Nonnull GIFImage, UIImage * _Nonnull thumbnailImage) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( completion ) completion(self, GIFImage, thumbnailImage);
+        if ( completion ){
+           completion(self, GIFImage, thumbnailImage);
+        }
     } failure:^(AVAsset * _Nonnull a, NSError * _Nonnull error) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( failure ) failure(self, error);
+        if (failure){
+           failure(self, error);
+        }
     }];
 }
 

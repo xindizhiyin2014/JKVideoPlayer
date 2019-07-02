@@ -10,30 +10,32 @@
 #import <UIKit/UIKit.h>
 @protocol SJFlipTransitionManagerObserver;
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJViewFlipTransition) {
     SJViewFlipTransition_Identity,
     SJViewFlipTransition_Horizontally, // 水平翻转
-} SJViewFlipTransition;
+};
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJFlipTransitionState) {
     SJFlipTransitionStateStart,
     SJFlipTransitionStateEnd,
-} SJFlipTransitionState;
+};
+
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJFlipTransitionManager <NSObject>
 - (instancetype)initWithTarget:(__strong UIView *)target;
 - (id<SJFlipTransitionManagerObserver>)getObserver;
 
-@property (nonatomic, readonly) SJFlipTransitionState state;
-@property (nonatomic) NSTimeInterval duration;
+@property (nonatomic, assign,readonly) SJFlipTransitionState state;
+@property (nonatomic, assign) NSTimeInterval duration;
 
 @property (nonatomic) SJViewFlipTransition flipTransition;
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated;
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(id<SJFlipTransitionManager> mgr))completionHandler;
 
-- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 
 

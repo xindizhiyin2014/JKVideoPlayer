@@ -10,9 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaDefinitionLoader : NSObject
-- (instancetype)initWithMedia:(id<SJMediaModelProtocol>)media handler:(void(^)(SJAVMediaDefinitionLoader *loader, AVPlayerItemStatus status))handler;
+
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)initWithMedia:(id<SJMediaModelProtocol>)media handler:(void(^)(SJAVMediaDefinitionLoader *loader, AVPlayerItemStatus status))handler;
 
 @property (nonatomic, strong, readonly) id<SJMediaModelProtocol> media;
 @property (nonatomic, strong, readonly, nullable) id<SJAVMediaPlayerProtocol> player;
+
 @end
 NS_ASSUME_NONNULL_END

@@ -15,8 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<SJDeviceVolumeAndBrightnessManagerObserver>)getObserver;
 @property (nonatomic, weak, nullable) UIView *targetView;
 
-@property (nonatomic) float volume; // device volume
-@property (nonatomic) float brightness; // device brightness
+@property (nonatomic, assign) float volume; // device volume
+@property (nonatomic, assign) float brightness; // device brightness
+
 @end
 
 

@@ -9,27 +9,28 @@
 #define SJFitOnScreenManagerProtocol_h
 #import <UIKit/UIKit.h>
 @protocol SJFitOnScreenManagerObserver;
-
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJFitOnScreenState) {
     SJFitOnScreenStateStart,
     SJFitOnScreenStateEnd,
-} SJFitOnScreenState;
+};
+
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJFitOnScreenManager <NSObject>
 - (instancetype)initWithTarget:(__strong UIView *)target targetSuperview:(__strong UIView *)superview;
 - (id<SJFitOnScreenManagerObserver>)getObserver;
 
-@property (nonatomic, readonly) SJFitOnScreenState state;
-@property (nonatomic) NSTimeInterval duration;
+@property (nonatomic, assign, readonly) SJFitOnScreenState state;
+@property (nonatomic, assign) NSTimeInterval duration;
 
 /// Fit On Screen
 @property (nonatomic, getter=isFitOnScreen) BOOL fitOnScreen;
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated;
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(id<SJFitOnScreenManager> mgr))completionHandler;
 
-- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 
 

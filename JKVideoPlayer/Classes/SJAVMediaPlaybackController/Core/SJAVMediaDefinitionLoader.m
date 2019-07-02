@@ -11,6 +11,7 @@
 #else
 #import "NSObject+SJObserverHelper.h"
 #endif
+#import "SJVideoPlayerMacro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaDefinitionLoader ()
@@ -25,31 +26,35 @@ NS_ASSUME_NONNULL_BEGIN
     NSLog(@"%d - %s", (int)__LINE__, __func__);
 #endif
 }
-- (instancetype)initWithMedia:(id<SJMediaModelProtocol>)media handler:(void (^)(SJAVMediaDefinitionLoader * _Nonnull, AVPlayerItemStatus))handler {
-    self = [super init];
-    if ( !self ) return nil;
-    _media = media;
-    _handler = handler;
-    [self sj_observeWithNotification:SJAVMediaItemStatusDidChangeNotification target:nil usingBlock:^(SJAVMediaDefinitionLoader *self, NSNotification * _Nonnull note) {
-        id<SJAVMediaPlayerProtocol> player = note.object;
-        if ( player == self.player ) {
-            [self _playerItemStatusDidChange];
-        }
-    }];
-    
-    __weak typeof(self) _self = self;
-    [SJAVMediaPlayerLoader loadPlayerForMedia:media completionHandler:^(id<SJMediaModelProtocol>  _Nonnull media, id<SJAVMediaPlayerProtocol>  _Nonnull player) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        self.player = player;
-        [self _playerItemStatusDidChange];
-    }];
-    return self;
+
++ (instancetype)initWithMedia:(id<SJMediaModelProtocol>)media handler:(void (^)(SJAVMediaDefinitionLoader * _Nonnull, AVPlayerItemStatus))handler {
+    SJAVMediaDefinitionLoader *loader = [[self alloc] init];
+    if (loader) {
+        
+       loader->_media = media;
+        loader->_handler = handler;
+        [loader sj_observeWithNotification:SJAVMediaItemStatusDidChangeNotification target:nil usingBlock:^(SJAVMediaDefinitionLoader *self, NSNotification * _Nonnull note) {
+            id<SJAVMediaPlayerProtocol> player = note.object;
+            if ( player == loader.player ) {
+                [loader _playerItemStatusDidChange];
+            }
+        }];
+        
+        [SJAVMediaPlayerLoader loadPlayerForMedia:media completionHandler:^(id<SJMediaModelProtocol>  _Nonnull media, id<SJAVMediaPlayerProtocol>  _Nonnull player) {
+            if ( !loader ) return;
+            loader.player = player;
+            [loader _playerItemStatusDidChange];
+        }];
+    }
+    return loader;
 }
 
 - (void)_playerItemStatusDidChange {
     AVPlayerItemStatus status = [_player sj_getAVPlayerItemStatus];
-    if ( _handler ) _handler(self, status);
+    if (self.handler ){
+        self.handler(self, status);
+    }
 }
+
 @end
 NS_ASSUME_NONNULL_END

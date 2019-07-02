@@ -12,6 +12,8 @@
 #import "NSObject+SJObserverHelper.h"
 #endif
 
+#import "SJVideoPlayerMacro.h"
+
 NS_ASSUME_NONNULL_BEGIN
 /**
  子层
@@ -45,9 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {
-        __weak typeof(self) _self = self;
+        @weakify(self);
         sjkvo_observe(self.playerLayer, @"readyForDisplay", ^(AVPlayerLayer *playerLayer, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return;
             self.readyForDisplay = self.playerLayer.isReadyForDisplay;
         });
@@ -71,16 +73,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface SJAVMediaPresenterContainer : UIView
-@property (nonatomic, strong, readonly) SJAVMediaSubPresenter *presenter;
-- (void)resetPresenter:(SJAVMediaSubPresenter *_Nullable)presenter;
-@end
-
-@implementation SJAVMediaPresenterContainer {
+{
     SJAVMediaSubPresenter *_Nullable _presenter;
 }
+
+@property (nonatomic, strong, readonly) SJAVMediaSubPresenter *presenter;
+
+- (void)resetPresenter:(SJAVMediaSubPresenter *_Nullable)presenter;
+
+@end
+
+@implementation SJAVMediaPresenterContainer
 - (void)resetPresenter:(SJAVMediaSubPresenter *_Nullable)presenter {
-    if ( presenter == _presenter ) return;
-    if ( _presenter ) [_presenter removeFromSuperview];
+    if ( presenter == _presenter ){
+      return;
+    }
+    
+    if ( _presenter ){
+       [_presenter removeFromSuperview];
+    }
     _presenter = presenter;
     if ( presenter ) {
         presenter.frame = self.bounds;
@@ -155,9 +166,9 @@ NS_ASSUME_NONNULL_BEGIN
     presenter.videoGravity = _videoGravity;
 
     // observe `readyForDisplay` of sub presenter
-    __weak typeof(self) _self = self;
+    @weakify(self);
     sjkvo_observe(presenter, @"readyForDisplay", ^(SJAVMediaSubPresenter *presenter, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         self.readyForDisplay = presenter.isReadyForDisplay;
     });

@@ -13,8 +13,8 @@
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJControlLayerAppearManager
 - (id<SJControlLayerAppearManagerObserver>)getObserver;
-@property (nonatomic, getter=isDisabled) BOOL disabled;
-@property (nonatomic) NSTimeInterval interval;
+@property (nonatomic, assign, getter=isDisabled) BOOL disabled;
+@property (nonatomic, assign) NSTimeInterval interval;
 
 /// Appear state
 @property (nonatomic, readonly) BOOL isAppeared;

@@ -60,12 +60,13 @@ typedef NS_ENUM(NSUInteger, SJVideoPlayerInactivityReason) {
 
 
 //Playback type (LIVE, VOD, FILE).
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger,SJMediaPlaybackType) {
     SJMediaPlaybackTypeUnknown,
     SJMediaPlaybackTypeLIVE,
     SJMediaPlaybackTypeVOD,
     SJMediaPlaybackTypeFILE
-} SJMediaPlaybackType;
+};
+
 
 @protocol SJPlayStatusObserver <NSObject>
 @property (nonatomic, copy, nullable) void(^playStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);

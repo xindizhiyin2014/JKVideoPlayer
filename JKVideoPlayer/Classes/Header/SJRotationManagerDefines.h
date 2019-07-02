@@ -59,23 +59,23 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否禁止自动旋转
 /// - 该属性只会禁止自动旋转, 当调用 rotate 等方法还是可以旋转的
 /// - 默认为 false
-@property (nonatomic) BOOL disableAutorotation;
+@property (nonatomic, assign) BOOL disableAutorotation;
 
 /// 自动旋转时, 所支持的方法
 /// - 默认为 .all
-@property (nonatomic) SJAutoRotateSupportedOrientation autorotationSupportedOrientation;
+@property (nonatomic, assign) SJAutoRotateSupportedOrientation autorotationSupportedOrientation;
 
 /// 动画持续的时间
 /// - 默认是 0.4
-@property (nonatomic) NSTimeInterval duration;
+@property (nonatomic, assign) NSTimeInterval duration;
 
 /// 当前的方向
 @property (nonatomic, readonly) SJOrientation currentOrientation;
 
 /// 是否全屏
 /// - landscapeRight 或者 landscapeLeft 即为全屏
-@property (nonatomic, readonly) BOOL isFullscreen;
-@property (nonatomic, readonly, getter=isTransitioning) BOOL transitioning; // 是否正在旋转
+@property (nonatomic, assign, readonly) BOOL isFullscreen;
+@property (nonatomic, assign, readonly, getter=isTransitioning) BOOL transitioning; // 是否正在旋转
 @property (nonatomic, weak, nullable) UIView *superview;
 @property (nonatomic, weak, nullable) UIView *target;
 @end
