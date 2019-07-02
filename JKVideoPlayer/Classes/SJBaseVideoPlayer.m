@@ -302,7 +302,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"0.1.3.8";
+    return @"0.1.3.9";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -342,8 +342,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     [self _setRotationAbleValue:@(YES)];
     [self rotationManager];
     [self registrar];
-
+    @weakify(self);
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        @strongify(self);
         [self addInterceptTapGR];
         [self reachability];
         [self gestureControl];
@@ -822,9 +823,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     [self _updateCurrentPlayingIndexPathIfNeeded:_URLAsset.playModel];
     [self _updatePlayModelObserver:_URLAsset.playModel];
     _mpc_assetObserver = [_URLAsset getObserver];
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _mpc_assetObserver.playModelDidChangeExeBlock = ^(SJVideoPlayerURLAsset * _Nonnull asset) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         [self _updateCurrentPlayingIndexPathIfNeeded:asset.playModel];
         [self _updatePlayModelObserver:asset.playModel];
@@ -982,7 +983,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 - (void)stopAndFadeOut {
+    @weakify(self);
     [self.view sj_fadeOutAndCompletion:^(UIView *view) {
+        @strongify(self);
         [view removeFromSuperview];
         [self stop];
     }];
@@ -1327,9 +1330,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     _deviceVolumeAndBrightnessManager.targetView = self.presentView;
     
     _deviceVolumeAndBrightnessManagerObserver = [_deviceVolumeAndBrightnessManager getObserver];
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _deviceVolumeAndBrightnessManagerObserver.volumeDidChangeExeBlock = ^(id<SJDeviceVolumeAndBrightnessManager>  _Nonnull mgr, float volume) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:volumeChanged:)] ) {
             [self.controlLayerDelegate videoPlayer:self volumeChanged:volume];
@@ -1337,7 +1340,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     };
     
     _deviceVolumeAndBrightnessManagerObserver.brightnessDidChangeExeBlock = ^(id<SJDeviceVolumeAndBrightnessManager>  _Nonnull mgr, float brightness) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:brightnessChanged:)] ) {
             [self.controlLayerDelegate videoPlayer:self brightnessChanged:brightness];
@@ -1442,7 +1445,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( _controlInfo->statusBar.needTmpShow ) return;
     _controlInfo->statusBar.needTmpShow = YES;
     [self.atViewController setNeedsStatusBarAppearanceUpdate];
+    @weakify(self);
     dispatch_async(dispatch_get_main_queue(), ^{
+        @strongify(self);
         self.controlInfo->statusBar.needTmpShow = NO;
     });
 }
@@ -1451,7 +1456,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( _controlInfo->statusBar.needTmpHidden ) return;
     _controlInfo->statusBar.needTmpHidden = YES;
     [self.atViewController setNeedsStatusBarAppearanceUpdate];
+    @weakify(self);
     dispatch_async(dispatch_get_main_queue(), ^{
+        @strongify(self);
         self.controlInfo->statusBar.needTmpHidden = NO;
     });
 }
@@ -1548,9 +1555,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( !_gestureControl )
         return;
     
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _gestureControl.gestureRecognizerShouldTrigger = ^BOOL(id<SJPlayerGestureControl>  _Nonnull control, SJPlayerGestureType type, CGPoint location) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return NO;
         
         if ( self.controlInfo->floatSmallViewControl.isAppeared )
@@ -1617,13 +1624,13 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     };
     
     _gestureControl.singleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         [self.controlLayerAppearManager switchAppearState];
     };
     
     _gestureControl.doubleTapHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGPoint location) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         
         if ( [self playStatus_isPlaying] )
@@ -1633,7 +1640,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     };
     
     _gestureControl.panHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, SJPanGestureTriggeredPosition position, SJPanGestureMovingDirection direction, SJPanGestureRecognizerState state, CGPoint translate) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         switch ( state ) {
             case SJPanGestureRecognizerStateBegan: {
@@ -1713,7 +1720,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     };
     
     _gestureControl.pinchHandler = ^(id<SJPlayerGestureControl>  _Nonnull control, CGFloat scale) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         self.playbackController.videoGravity = scale > 1 ?AVLayerVideoGravityResizeAspectFill:AVLayerVideoGravityResizeAspect;
     };
@@ -1767,9 +1774,10 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
         return;
     
     _controlLayerAppearManager.disabled = _controlInfo->controlLayer.isDisabled;
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _controlLayerAppearManager.canAutomaticallyDisappear = ^BOOL(id<SJControlLayerAppearManager>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
+
         if ( !self ) return NO;
 
         if ( [self.controlLayerDelegate respondsToSelector:@selector(controlLayerOfVideoPlayerCanAutomaticallyDisappear:)] ) {
@@ -1785,7 +1793,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     
     _controlLayerAppearManagerObserver = [_controlLayerAppearManager getObserver];
     _controlLayerAppearManagerObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager> mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         
         if ( mgr.isAppeared ) {
@@ -1921,9 +1929,11 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
     if ( self.modalViewControllerManager.isTransitioning )
         return;
-    
+    @weakify(self);
     dispatch_async(dispatch_get_main_queue(), ^{
+        @strongify(self);
         [self.modalViewControllerManager dismissModalViewControlllerCompletion:^{
+            @strongify(self);
             [self controlLayerNeedAppear];
             [self.view insertSubview:self.presentView atIndex:0];
             self.rotationManager.superview = self.view;
@@ -1967,9 +1977,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
         return;
     
     _fitOnScreenManagerObserver = [_fitOnScreenManager getObserver];
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _fitOnScreenManagerObserver.fitOnScreenWillBeginExeBlock = ^(id<SJFitOnScreenManager> mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         [self controlLayerNeedDisappear];
         
@@ -1986,7 +1996,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     };
     
     _fitOnScreenManagerObserver.fitOnScreenDidEndExeBlock = ^(id<SJFitOnScreenManager> mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         if ( self.autoManageViewToFitOnScreenOrRotation && !mgr.isFitOnScreen ) {
             CGSize presentationSize = self.playbackController.presentationSize;
@@ -2014,9 +2024,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler {
     self.useFitOnScreenAndDisableRotation = YES;
     
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [self.fitOnScreenManager setFitOnScreen:fitOnScreen animated:animated completionHandler:^(id<SJFitOnScreenManager> mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         if ( completionHandler ) completionHandler(self);
     }];
@@ -2074,9 +2084,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
         return;
     rotationManager.superview = self.view;
     rotationManager.target = self.presentView;
-    __weak typeof(self) _self = self;
+    @weakify(self);
     rotationManager.shouldTriggerRotation = ^BOOL(id<SJRotationManagerProtocol>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return NO;
         if ( mgr.isFullscreen == NO ) {
             if ( self.playModelObserver.isScrolling ) return NO;
@@ -2104,7 +2114,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     
     _rotationManagerObserver = [rotationManager getObserver];
     _rotationManagerObserver.rotationDidStartExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:willRotateView:)] ) {
             [self.controlLayerDelegate videoPlayer:self willRotateView:mgr.isFullscreen];
@@ -2129,7 +2139,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     };
     
     _rotationManagerObserver.rotationDidEndExeBlock = ^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         if ( self.autoManageViewToFitOnScreenOrRotation && !mgr.isFullscreen ) {
             CGSize presentationSize = self.playbackController.presentationSize;
@@ -2188,9 +2198,10 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 - (void)rotate:(SJOrientation)orientation animated:(BOOL)animated completion:(void (^ _Nullable)(__kindof SJBaseVideoPlayer *player))block {
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [self.rotationManager rotate:orientation animated:animated completionHandler:^(id<SJRotationManagerProtocol>  _Nonnull mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
+
         if ( !self ) return;
         if ( block ) block(self);
     }];
@@ -2263,10 +2274,10 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
                       size:(CGSize)size
                 completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, UIImage * __nullable image, NSError *__nullable error))block {
     if ( [_playbackController respondsToSelector:@selector(screenshotWithTime:size:completion:)] ) {
-        __weak typeof(self) _self = self;
+        @weakify(self);
         [(id<SJMediaPlaybackScreenshotController>)_playbackController screenshotWithTime:time size:size completion:^(id<SJMediaPlaybackController>  _Nonnull controller, UIImage * _Nullable image, NSError * _Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                __strong typeof(_self) self = _self;
+                @strongify(self);
                 if ( !self ) return ;
                 if ( block ) block(self, image, error);
             });
@@ -2294,17 +2305,17 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
                  completion:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSURL *fileURL, UIImage *thumbnailImage))completion
                     failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure {
     if ( [_playbackController respondsToSelector:@selector(exportWithBeginTime:endTime:presetName:progress:completion:failure:)] ) {
-        __weak typeof(self) _self = self;
+        @weakify(self);
         [(id<SJMediaPlaybackExportController>)_playbackController exportWithBeginTime:beginTime endTime:endTime presetName:presetName progress:^(id<SJMediaPlaybackController>  _Nonnull controller, float progress) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return ;
             if ( progressBlock ) progressBlock(self, progress);
         } completion:^(id<SJMediaPlaybackController>  _Nonnull controller, NSURL * _Nullable fileURL, UIImage * _Nullable thumbImage) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return ;
             if ( completion ) completion(self, fileURL, thumbImage);
         } failure:^(id<SJMediaPlaybackController>  _Nonnull controller, NSError * _Nullable error) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return ;
             if ( failure ) failure(self, error);
         }];
@@ -2331,17 +2342,17 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
                          failure:(void(^)(__kindof SJBaseVideoPlayer *videoPlayer, NSError *error))failure {
     if ( [_playbackController respondsToSelector:@selector(generateGIFWithBeginTime:duration:maximumSize:interval:gifSavePath:progress:completion:failure:)] ) {
         NSURL *filePath = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"SJGeneratedGif.gif"]];
-        __weak typeof(self) _self = self;
+        @weakify(self);
         [(id<SJMediaPlaybackExportController>)_playbackController generateGIFWithBeginTime:beginTime duration:duration maximumSize:CGSizeMake(375, 375) interval:0.1f gifSavePath:filePath progress:^(id<SJMediaPlaybackController>  _Nonnull controller, float progress) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return ;
             if ( progressBlock ) progressBlock(self, progress);
         } completion:^(id<SJMediaPlaybackController>  _Nonnull controller, UIImage * _Nonnull imageGIF, UIImage * _Nonnull screenshot) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return ;
             if ( completion ) completion(self, imageGIF, screenshot, filePath);
         } failure:^(id<SJMediaPlaybackController>  _Nonnull controller, NSError * _Nonnull error) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return;
             if ( failure ) failure(self, error);
         }];
@@ -2405,10 +2416,10 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     floatSmallViewController.targetSuperview = self.view;
     floatSmallViewController.target = self.presentView;
     
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _floatSmallViewControllerObesrver = [_floatSmallViewController getObserver];
     _floatSmallViewControllerObesrver.appearStateDidChangeExeBlock = ^(id<SJFloatSmallViewControllerProtocol>  _Nonnull controller) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         BOOL isAppeared = controller.isAppeared;
         self.controlInfo->floatSmallViewControl.isAppeared = isAppeared;
@@ -2494,9 +2505,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 - (void)showTitle:(NSString *)title duration:(NSTimeInterval)duration hiddenExeBlock:(nullable void (^)(__kindof SJBaseVideoPlayer * _Nonnull))hiddenExeBlock {
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [self.prompt showTitle:title duration:duration hiddenExeBlock:^(SJPrompt * _Nonnull prompt) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         if ( hiddenExeBlock ) hiddenExeBlock(self);
     }];
@@ -2507,9 +2518,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 - (void)showAttributedString:(NSAttributedString *)attributedString duration:(NSTimeInterval)duration hiddenExeBlock:(void(^__nullable)(__kindof SJBaseVideoPlayer *player))hiddenExeBlock {
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [self.prompt showAttributedString:attributedString duration:duration hiddenExeBlock:^(SJPrompt * _Nonnull prompt) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         if ( hiddenExeBlock ) hiddenExeBlock(self);
     }];
