@@ -132,7 +132,7 @@ inline static bool isFloatZero(float value) {
     
     // - buffer -
     sjkvo_observe(item, @"loadedTimeRanges", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        
+        @strongify(self);
         if ( !self ) return;
         [self _playerItemLoadedTimeRangesDidChange];
     });
