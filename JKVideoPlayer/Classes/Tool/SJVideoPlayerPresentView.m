@@ -7,22 +7,18 @@
 //
 
 #import "SJVideoPlayerPresentView.h"
+#import <JKUIHelper/JKViewProtocol.h>
 NS_ASSUME_NONNULL_BEGIN
-@interface SJVideoPlayerPresentView ()
-@end
-
-@implementation SJVideoPlayerPresentView {
+@interface SJVideoPlayerPresentView ()<JKViewProtocol>
+{
     BOOL _isHidden;
     BOOL _isDelayed;
 }
+@end
+
+@implementation SJVideoPlayerPresentView
 
 @synthesize placeholderImageView = _placeholderImageView;
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if ( !self ) return nil;
-    [self _presentSetupView];
-    return self;
-}
 
 #ifdef SJ_MAC
 - (void)dealloc {
@@ -30,9 +26,25 @@ NS_ASSUME_NONNULL_BEGIN
 }
 #endif
 
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self initSubViews];
+    }
+    return self;
+}
+
+- (void)initSubViews{
+    self.backgroundColor = [UIColor blackColor];
+    self.placeholderImageView.frame = self.bounds;
+    [self hiddenPlaceholderAnimated:NO delay:0];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
-    if ( _layoutSubviewsExeBlock ) _layoutSubviewsExeBlock(self);
+    if (self.layoutSubviewsExeBlock) {
+        self.layoutSubviewsExeBlock(self);
+    }
 }
 
 - (BOOL)placeholderImageViewIsHidden {
@@ -78,19 +90,16 @@ NS_ASSUME_NONNULL_BEGIN
     _isDelayed = NO;
 }
 
-- (void)_presentSetupView {
-    self.backgroundColor = [UIColor blackColor];
-    self.placeholderImageView.frame = self.bounds;
-    _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self addSubview:_placeholderImageView];
-    [self hiddenPlaceholderAnimated:NO delay:0];
-}
 
+#pragma mark - - - - lazyLoad - - - -
 - (UIImageView *)placeholderImageView {
-    if ( _placeholderImageView ) return _placeholderImageView;
-    _placeholderImageView = [UIImageView new];
-    _placeholderImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _placeholderImageView.clipsToBounds = YES;
+    if (!_placeholderImageView) {
+        _placeholderImageView = [UIImageView new];
+        _placeholderImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _placeholderImageView.clipsToBounds = YES;
+        _placeholderImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self addSubview:_placeholderImageView];
+    }
     return _placeholderImageView;
 }
 

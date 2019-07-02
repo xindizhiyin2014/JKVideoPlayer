@@ -50,6 +50,9 @@
 #import "NSObject+SJObserverHelper.h"
 #endif
 
+#import "SJVideoPlayerMacro.h"
+
+
 NS_ASSUME_NONNULL_BEGIN
 static NSInteger _SJBaseVideoPlayerViewTag = 10000;
 
@@ -232,7 +235,8 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 @end
 
-@implementation SJBaseVideoPlayer {
+@interface SJBaseVideoPlayer()
+{
     UIView *_view;
     SJVideoPlayerPresentView *_presentView;
     SJVideoPlayerRegistrar *_registrar;
@@ -244,7 +248,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     /// device volume And brightness manager
     id<SJDeviceVolumeAndBrightnessManager> _deviceVolumeAndBrightnessManager;
     id<SJDeviceVolumeAndBrightnessManagerObserver> _deviceVolumeAndBrightnessManagerObserver;
-
+    
     /// gestures
     UITapGestureRecognizer *_lockStateTapGesture;
     SJPlayerGestureControl *_gestureControl;
@@ -288,12 +292,17 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     UIView *_Nullable _mvcm_targetSuperView;
 }
 
+@end
+
+@implementation SJBaseVideoPlayer
+
+
 + (instancetype)player {
     return [[self alloc] init];
 }
 
 + (NSString *)version {
-    return @"2.4.6";
+    return @"0.1.3.2";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -339,7 +348,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
         [self reachability];
         [self gestureControl];
         [self _configAVAudioSession];
-        if ( SJBaseVideoPlayer.isEnabledStatistics ) [self.statistics observePlayer:(id)self];
+        if (SJBaseVideoPlayer.isEnabledStatistics ){
+          [self.statistics observePlayer:(id)self];
+        }
     });
     return self;
 }
@@ -467,9 +478,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     view.player = self;
     view.backgroundColor = [UIColor blackColor];
     
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [(SJPlayerView *)_view setWillMoveToWindowExeBlock:^(SJPlayerView * _Nonnull view, UIWindow *window) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return ;
         [self.playModelObserver refreshAppearState];
     }];
@@ -483,7 +494,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     }];
     
     [_presentView setLayoutSubviewsExeBlock:^(SJVideoPlayerPresentView * _Nonnull view) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         self.controlLayerView.frame = view.bounds;
     }];
@@ -496,65 +507,79 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
         [self.view addGestureRecognizer:intercept];
     });
 }
+#pragma mark - - - - UIEvent - - - -
+- (void)handleInterceptTapGR:(UITapGestureRecognizer *)tap {
+#warning ???
+}
 
-- (void)handleInterceptTapGR:(UITapGestureRecognizer *)tap { }
+- (void)handleLockStateTapGesture:(UITapGestureRecognizer *)tap {
+    if ( [self.controlLayerDelegate respondsToSelector:@selector(tappedPlayerOnTheLockedState:)] ) {
+        [self.controlLayerDelegate tappedPlayerOnTheLockedState:self];
+    }
+}
+
+#pragma mark - - - - setter - - - -
+
+#pragma mark - - - - getter - - - -
 
 - (SJVideoPlayerPresentView *)presentView {
-    if ( _presentView ) return _presentView;
-    _presentView = [SJVideoPlayerPresentView new];
+    if (!_presentView ){
+      _presentView = [SJVideoPlayerPresentView new];
+    }
     return _presentView;
 }
 
 - (SJVideoPlayerRegistrar *)registrar {
-    if ( _registrar ) return _registrar;
-    _registrar = [SJVideoPlayerRegistrar new];
-    
-    __weak typeof(self) _self = self;
-    _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillResignActiveNotification:)] ) {
-            [self.controlLayerDelegate receivedApplicationWillResignActiveNotification:self];
-        }
-    };
-    
-    _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        BOOL canPlay = [self playStatus_isPaused_ReasonPause] && self.controlInfo->plabackControl.resumePlaybackWhenAppDidEnterForeground;
-        if ( self.isPlayOnScrollView ) {
-            if ( canPlay && self.isScrollAppeared ) [self play];
-        }
-        else {
-            if ( canPlay ) [self play];
-        }
+    if (!_registrar ){
+        _registrar = [SJVideoPlayerRegistrar new];
+        @weakify(self);
+        _registrar.willResignActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+            @strongify(self);
+            if ( !self ) return;
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillResignActiveNotification:)] ) {
+                [self.controlLayerDelegate receivedApplicationWillResignActiveNotification:self];
+            }
+        };
         
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidBecomeActiveNotification:)] ) {
-            [self.controlLayerDelegate receivedApplicationDidBecomeActiveNotification:self];
-        }
-    };
-    
-    _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillEnterForegroundNotification:)] ) {
-            [self.controlLayerDelegate receivedApplicationWillEnterForegroundNotification:self];
-        }
+        _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+            @strongify(self);
+            if ( !self ) return;
+            BOOL canPlay = [self playStatus_isPaused_ReasonPause] && self.controlInfo->plabackControl.resumePlaybackWhenAppDidEnterForeground;
+            if ( self.isPlayOnScrollView ) {
+                if ( canPlay && self.isScrollAppeared ) [self play];
+            }
+            else {
+                if ( canPlay ) [self play];
+            }
+            
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidBecomeActiveNotification:)] ) {
+                [self.controlLayerDelegate receivedApplicationDidBecomeActiveNotification:self];
+            }
+        };
         
-        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_setRotationAbleValue:) object:nil];
-        [self performSelector:@selector(_setRotationAbleValue:) withObject:@(YES) afterDelay:1];
-    };
-    
-    _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
-        if ( !self ) return ;
-        if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidEnterBackgroundNotification:)] ) {
-            [self.controlLayerDelegate receivedApplicationDidEnterBackgroundNotification:self];
-        }
+        _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+            @strongify(self);
+            if ( !self ) return ;
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationWillEnterForegroundNotification:)] ) {
+                [self.controlLayerDelegate receivedApplicationWillEnterForegroundNotification:self];
+            }
+            
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_setRotationAbleValue:) object:nil];
+            [self performSelector:@selector(_setRotationAbleValue:) withObject:@(YES) afterDelay:1];
+        };
         
-        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_setRotationAbleValue:) object:nil];
-        [self _setRotationAbleValue:@(NO)];
-    };
+        _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+            @strongify(self);
+            if ( !self ) return ;
+            if ( [self.controlLayerDelegate respondsToSelector:@selector(receivedApplicationDidEnterBackgroundNotification:)] ) {
+                [self.controlLayerDelegate receivedApplicationDidEnterBackgroundNotification:self];
+            }
+            
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_setRotationAbleValue:) object:nil];
+            [self _setRotationAbleValue:@(NO)];
+        };
+    }
+    
     return _registrar;
 }
 
@@ -564,16 +589,12 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
 
 - (UITapGestureRecognizer *)lockStateTapGesture {
-    if ( _lockStateTapGesture ) return _lockStateTapGesture;
-    _lockStateTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLockStateTapGesture:)];
+    if (!_lockStateTapGesture){
+        _lockStateTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLockStateTapGesture:)];
+    }
     return _lockStateTapGesture;
 }
 
-- (void)handleLockStateTapGesture:(UITapGestureRecognizer *)tap {
-    if ( [self.controlLayerDelegate respondsToSelector:@selector(tappedPlayerOnTheLockedState:)] ) {
-        [self.controlLayerDelegate tappedPlayerOnTheLockedState:self];
-    }
-}
 
 - (void)_updateCurrentPlayingIndexPathIfNeeded:(SJPlayModel *)playModel {
     if ( !playModel )
@@ -595,45 +616,60 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
 
 @implementation SJBaseVideoPlayer (Placeholder)
-///
-/// Thanks @chjsun
-/// https://github.com/changsanjiang/SJVideoPlayer/issues/42
-///
+
+#pragma mark - - - - readonly - - - -
 - (UIImageView *)placeholderImageView {
     return self.presentView.placeholderImageView;
-}
-
-- (void)setHiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay:(BOOL)hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay {
-    _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay = hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
 }
 
 - (BOOL)hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay {
     return _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay;
 }
 
-- (void)setDelayInSecondsForHiddenPlaceholderImageView:(NSTimeInterval)delayInSecondsForHiddenPlaceholderImageView {
-    _controlInfo->placeholder.delayHidden = delayInSecondsForHiddenPlaceholderImageView;
-}
 - (NSTimeInterval)delayInSecondsForHiddenPlaceholderImageView {
     return _controlInfo->placeholder.delayHidden;
 }
+
+#pragma mark - - - - setter - - - -
+- (void)setHiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay:(BOOL)hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay {
+    _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay = hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
+}
+
+- (void)setDelayInSecondsForHiddenPlaceholderImageView:(NSTimeInterval)delayInSecondsForHiddenPlaceholderImageView {
+    _controlInfo->placeholder.delayHidden = delayInSecondsForHiddenPlaceholderImageView;
+}
+
 @end
 
 
 #pragma mark -
 
 @implementation SJBaseVideoPlayer (VideoFlipTransition)
+
+#pragma mark - - - setter - - - -
 - (void)setFlipTransitionManager:(id<SJFlipTransitionManager> _Nullable)flipTransitionManager {
     _flipTransitionManager = flipTransitionManager;
     [self _needUpdateFlipTransitionManagerProperties];
 }
+
+#pragma mark - - - - getter - - - -
 - (id<SJFlipTransitionManager>)flipTransitionManager {
-    if ( _flipTransitionManager )
-        return _flipTransitionManager;
-    
-    _flipTransitionManager = [[SJFlipTransitionManager alloc] initWithTarget:self.playbackController.playerView];
-    [self _needUpdateFlipTransitionManagerProperties];
+    if (!_flipTransitionManager ){
+        _flipTransitionManager = [[SJFlipTransitionManager alloc] initWithTarget:self.playbackController.playerView];
+        [self _needUpdateFlipTransitionManagerProperties];
+    }
     return _flipTransitionManager;
+
+}
+
+#pragma mark - - - - readonly - - - -
+
+- (BOOL)isFlipTransitioning {
+    return self.flipTransitionManager.state == SJFlipTransitionStateStart;
+}
+
+- (SJViewFlipTransition)flipTransition {
+    return self.flipTransitionManager.flipTransition;
 }
 
 - (void)_needUpdateFlipTransitionManagerProperties {
@@ -641,28 +677,26 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
         return;
     
     _flipTransitionManagerObserver = [_flipTransitionManager getObserver];
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _flipTransitionManagerObserver.flipTransitionDidStartExeBlock = ^(id<SJFlipTransitionManager> mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( self.flipTransitionDidStartExeBlock )
-            self.flipTransitionDidStartExeBlock(self);
+        if ( self.flipTransitionDidStartExeBlock){
+           self.flipTransitionDidStartExeBlock(self);
+        }
     };
     
     _flipTransitionManagerObserver.flipTransitionDidStopExeBlock = ^(id<SJFlipTransitionManager> mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
-        if ( self.flipTransitionDidStopExeBlock )
-            self.flipTransitionDidStopExeBlock(self);
+        if ( self.flipTransitionDidStopExeBlock){
+           self.flipTransitionDidStopExeBlock(self);
+        }
+        
     };
 }
 
-- (BOOL)isFlipTransitioning {
-    return self.flipTransitionManager.state == SJFlipTransitionStateStart;
-}
-- (SJViewFlipTransition)flipTransition {
-    return self.flipTransitionManager.flipTransition;
-}
+
 - (void)setFlipTransition:(SJViewFlipTransition)flipTransition {
     [self setFlipTransition:flipTransition animated:YES];
 }
@@ -670,9 +704,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     [self setFlipTransition:t animated:animated completionHandler:nil];
 }
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler {
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [self.flipTransitionManager setFlipTransition:t animated:animated completionHandler:^(id<SJFlipTransitionManager> mgr) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
       if ( completionHandler )
           completionHandler(self);
@@ -696,55 +730,12 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
 #pragma mark - 控制
 @implementation SJBaseVideoPlayer (PlayControl)
+
+#pragma mark - - - - setter - - - -
 - (void)setPlaybackController:(nullable id<SJMediaPlaybackController>)playbackController {
     [_playbackController.playerView removeFromSuperview];
     _playbackController = playbackController;
     [self _needUpdatePlaybackControllerProperties];
-}
-
-- (id<SJMediaPlaybackController>)playbackController {
-    if ( _playbackController ) return _playbackController;
-    _playbackController = [SJAVMediaPlaybackController new];
-    [self _needUpdatePlaybackControllerProperties];
-    return _playbackController;
-}
-
-- (void)_needUpdatePlaybackControllerProperties {
-    if ( !_playbackController )
-        return;
-    
-    _playbackController.delegate = self;
-    _playbackController.pauseWhenAppDidEnterBackground = _controlInfo->plabackControl.pauseWhenAppDidEnterBackground;
-    if ( _playbackController.playerView.superview != self.presentView ) {
-        _playbackController.playerView.frame = self.presentView.bounds;
-        _playbackController.playerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [_presentView insertSubview:_playbackController.playerView atIndex:0];
-    }
-    if ( _playbackController.rate != self.rate ) _playbackController.rate = self.rate;
-    if ( _playbackController.videoGravity != self.videoGravity ) _playbackController.videoGravity = self.videoGravity;
-}
-
-- (void)switchVideoDefinition:(SJVideoPlayerURLAsset *)URLAsset {
-    [self.playbackController switchVideoDefinition:URLAsset];
-}
-
-- (SJMediaPlaybackType)playbackType {
-    return _playbackController.playbackType;
-}
-
-- (id<SJPlayStatusObserver>)getPlayStatusObserver {
-    return [[SJPlayStatusObserver alloc] initWithPlayer:(id)self];
-}
-
-- (NSError *_Nullable)error {
-    return _playbackController.error;
-}
-
-- (SJVideoPlayerInactivityReason)inactivityReason {
-    return _playbackController.inactivityReason;
-}
-- (SJVideoPlayerPausedReason)pausedReason {
-    return _playbackController.pausedReason;
 }
 
 // 1.
@@ -769,8 +760,61 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     
     [self _showOrHiddenPlaceholderImageViewIfNeeded];
 }
+
+#pragma mark - - - - getter - - - -
+- (id<SJMediaPlaybackController>)playbackController {
+    if (!_playbackController ){
+        _playbackController = [SJAVMediaPlaybackController new];
+        [self _needUpdatePlaybackControllerProperties];
+    }
+    return _playbackController;
+}
+
+#pragma mark - - - - readonly - - - -
+- (SJMediaPlaybackType)playbackType {
+    return _playbackController.playbackType;
+}
+
+- (id<SJPlayStatusObserver>)getPlayStatusObserver {
+    return [SJPlayStatusObserver initWithPlayer:(id)self];
+}
+
+- (NSError *_Nullable)error {
+    return _playbackController.error;
+}
+
+- (SJVideoPlayerInactivityReason)inactivityReason {
+    return _playbackController.inactivityReason;
+}
+- (SJVideoPlayerPausedReason)pausedReason {
+    return _playbackController.pausedReason;
+}
+
 - (nullable SJVideoPlayerURLAsset *)URLAsset {
     return _URLAsset;
+}
+
+- (void)_needUpdatePlaybackControllerProperties {
+    if ( !_playbackController )
+        return;
+    
+    _playbackController.delegate = self;
+    _playbackController.pauseWhenAppDidEnterBackground = _controlInfo->plabackControl.pauseWhenAppDidEnterBackground;
+    if ( _playbackController.playerView.superview != self.presentView ) {
+        _playbackController.playerView.frame = self.presentView.bounds;
+        _playbackController.playerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [_presentView insertSubview:_playbackController.playerView atIndex:0];
+    }
+    if ( _playbackController.rate != self.rate ){
+        _playbackController.rate = self.rate;
+    }
+    if ( _playbackController.videoGravity != self.videoGravity ){
+        _playbackController.videoGravity = self.videoGravity;
+    }
+}
+
+- (void)switchVideoDefinition:(SJVideoPlayerURLAsset *)URLAsset {
+    [self.playbackController switchVideoDefinition:URLAsset];
 }
 
 - (void)_updateAssetObservers {
@@ -1039,7 +1083,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
         return;
     
     // update playModel
-    self.playModelObserver = [[SJPlayModelPropertiesObserver alloc] initWithPlayModel:playModel];
+    self.playModelObserver = [SJPlayModelPropertiesObserver initWithPlayModel:playModel];
     self.playModelObserver.delegate = (id)self;
     [self.playModelObserver refreshAppearState];
 }
@@ -1052,9 +1096,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( [self playStatus_isReadyToPlay] ) {
         // auto appear control layer if needed
         if ( !self.isLockedScreen && self.controlLayerAutoAppearWhenAssetInitialized ) {
-            __weak typeof(self) _self = self;
+            @weakify(self);
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                __strong typeof(_self) self = _self;
+                @strongify(self);
                 if ( !self ) return;
                 [self.controlLayerAppearManager needAppear];
             });
@@ -1202,36 +1246,41 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
 @implementation SJBaseVideoPlayer (Network)
 
-- (void)setReachability:(id<SJReachability> _Nullable)reachability {
-    _reachability = reachability;
-    [self _needUpdateReachabilityProperties];
-}
-
-- (id<SJReachability>)reachability {
-    if ( _reachability )
-        return _reachability;
-    _reachability = [SJReachability shared];
-    [self _needUpdateReachabilityProperties];
-    return _reachability;
-}
-
 - (void)_needUpdateReachabilityProperties {
     if ( !_reachability )
         return;
     
     _reachabilityObserver = [_reachability getObserver];
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _reachabilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability> r, SJNetworkStatus status) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         if ( [self.controlLayerDelegate respondsToSelector:@selector(videoPlayer:reachabilityChanged:)] ) {
             [self.controlLayerDelegate videoPlayer:self reachabilityChanged:status];
         }
         
-        if ( self.networkStatusDidChangeExeBlock )
-            self.networkStatusDidChangeExeBlock(self);
+        if (self.networkStatusDidChangeExeBlock){
+          self.networkStatusDidChangeExeBlock(self);
+        }
     };
 }
+
+#pragma mark - - - - setter - - - -
+- (void)setReachability:(id<SJReachability> _Nullable)reachability {
+    _reachability = reachability;
+    [self _needUpdateReachabilityProperties];
+}
+
+#pragma mark - - - - getter - - - -
+- (id<SJReachability>)reachability {
+    if (!_reachability ){
+        _reachability = [SJReachability shared];
+        [self _needUpdateReachabilityProperties];
+    }
+    return _reachability;
+}
+
+
 
 ///
 /// Thanks @18138870200
@@ -2005,9 +2054,10 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 - (id<SJRotationManagerProtocol>)rotationManager {
-    if ( _rotationManager ) return _rotationManager;
-    _rotationManager = [[SJRotationManager alloc] init];
-    [self _configRotationManager:_rotationManager];
+    if (!_rotationManager) {
+        _rotationManager = [[SJRotationManager alloc] init];
+        [self _configRotationManager:_rotationManager];
+    }
     return _rotationManager;
 }
 

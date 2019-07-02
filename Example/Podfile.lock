@@ -1,7 +1,28 @@
 PODS:
   - JKSandBoxManager (0.1.6.4)
-  - JKVideoPlayer (0.1.1):
+  - JKUIHelper (0.1.9.2):
+    - JKUIHelper/JKCategories (= 0.1.9.2)
+    - JKUIHelper/JKHitTest (= 0.1.9.2)
+    - JKUIHelper/JKProtocol (= 0.1.9.2)
+    - JKUIHelper/JKRoundCorner (= 0.1.9.2)
+    - JKUIHelper/JKShadow (= 0.1.9.2)
+    - JKUIHelper/JKTextView (= 0.1.9.2)
+    - SDWebImage
+  - JKUIHelper/JKCategories (0.1.9.2):
+    - SDWebImage
+  - JKUIHelper/JKHitTest (0.1.9.2):
+    - SDWebImage
+  - JKUIHelper/JKProtocol (0.1.9.2):
+    - SDWebImage
+  - JKUIHelper/JKRoundCorner (0.1.9.2):
+    - SDWebImage
+  - JKUIHelper/JKShadow (0.1.9.2):
+    - SDWebImage
+  - JKUIHelper/JKTextView (0.1.9.2):
+    - SDWebImage
+  - JKVideoPlayer (0.1.3.2):
     - JKSandBoxManager
+    - JKUIHelper
     - Masonry
     - Reachability
     - SJUIKit
@@ -9,6 +30,9 @@ PODS:
   - Masonry (1.1.0)
   - MJRefresh (3.2.0)
   - Reachability (3.2)
+  - SDWebImage (5.0.6):
+    - SDWebImage/Core (= 5.0.6)
+  - SDWebImage/Core (5.0.6)
   - SJUIKit (0.0.0.32):
     - SJUIKit/AsyncLoad (= 0.0.0.32)
     - SJUIKit/AttributesFactory (= 0.0.0.32)
@@ -54,10 +78,12 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - JKSandBoxManager
+    - JKUIHelper
     - Kiwi
     - Masonry
     - MJRefresh
     - Reachability
+    - SDWebImage
     - SJUIKit
 
 EXTERNAL SOURCES:
@@ -66,13 +92,15 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   JKSandBoxManager: 82c9f56f87f0093dd010348748e11bbe88384794
-  JKVideoPlayer: 244f102dea3e2d2573652d1e46396aa653cc2f5f
+  JKUIHelper: 0c923b582ca3ad90bb0e8eaebc585275d02b220b
+  JKVideoPlayer: f62a38175e24764f83cef63bc01db00f9377ecad
   Kiwi: fbeafef0f00e4d8f7dcb3420a4930afe70af77f7
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
   SJUIKit: 77fc2857b2322b950597dec7f39ceea12d4bf2b9
 
 PODFILE CHECKSUM: 06e222b72d9fb349023ff339308aa8676d4ea779
 
-COCOAPODS: 1.7.2
+COCOAPODS: 1.7.3

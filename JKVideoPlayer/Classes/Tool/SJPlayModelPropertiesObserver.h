@@ -21,17 +21,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface SJPlayModelPropertiesObserver : NSObject
++ (instancetype) new NS_UNAVAILABLE;
+- (instancetype) init NS_UNAVAILABLE;
 
-- (instancetype)initWithPlayModel:(__kindof SJPlayModel *)playModel;
++ (instancetype)initWithPlayModel:(__kindof SJPlayModel *)playModel;
 
 @property (nonatomic, weak, nullable) id <SJPlayModelPropertiesObserverDelegate> delegate;
 
-@property (nonatomic, readonly) BOOL isAppeared;
-@property (nonatomic, readonly) BOOL isTouchedTablView;
-@property (nonatomic, readonly) BOOL isTouchedCollectionView;
-@property (nonatomic, readonly) BOOL isPlayInTableView;
-@property (nonatomic, readonly) BOOL isPlayInCollectionView;
-@property (nonatomic, readonly) BOOL isScrolling;
+@property (nonatomic, assign ,readonly) BOOL isAppeared;
+@property (nonatomic, assign ,readonly) BOOL isTouchedTablView;
+@property (nonatomic, assign ,readonly) BOOL isTouchedCollectionView;
+@property (nonatomic, assign ,readonly) BOOL isPlayInTableView;
+@property (nonatomic, assign ,readonly) BOOL isPlayInCollectionView;
+@property (nonatomic, assign ,readonly) BOOL isScrolling;
 
 - (void)refreshAppearState;
 @end

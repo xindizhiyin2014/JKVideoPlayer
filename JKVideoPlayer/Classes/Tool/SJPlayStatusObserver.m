@@ -14,16 +14,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJPlayStatusObserver
-@synthesize playStatusDidChangeExeBlock = _playStatusDidChangeExeBlock;
-- (instancetype)initWithPlayer:(id<SJBaseVideoPlayer>)player {
-    self = [super init];
-    if ( !self ) return nil;
-    [(id)player sj_addObserver:self forKeyPath:@"playStatus"];
-    return self;
+@synthesize playStatusDidChangeExeBlock;// = _playStatusDidChangeExeBlock;
++ (instancetype)initWithPlayer:(id<SJBaseVideoPlayer>)player {
+    SJPlayStatusObserver *observer = [[self alloc] init];
+    if (observer) {
+       [(id)player sj_addObserver:observer forKeyPath:@"playStatus"];
+    }
+    return observer;
+    
 }
 
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable SJBaseVideoPlayer *)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
-    if ( _playStatusDidChangeExeBlock ) _playStatusDidChangeExeBlock(object);
+    if (self.playStatusDidChangeExeBlock ){
+       self.playStatusDidChangeExeBlock(object);
+    }
 }
 @end
 NS_ASSUME_NONNULL_END

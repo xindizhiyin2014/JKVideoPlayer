@@ -10,6 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPlayStatusObserver : NSObject<SJPlayStatusObserver>
-- (instancetype)initWithPlayer:(id<SJBaseVideoPlayer>)player;
+
++ (instancetype) new NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)initWithPlayer:(id<SJBaseVideoPlayer>)player;
+
 @end
 NS_ASSUME_NONNULL_END

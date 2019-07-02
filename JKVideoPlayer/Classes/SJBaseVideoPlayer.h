@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)player;
 - (instancetype)init;
 
+
 // - View -
 
 @property (nonatomic, strong, readonly) UIView *view;
@@ -75,12 +76,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 播放器准备好显示时, 是否隐藏占位图
 ///
 /// - 默认为YES
-@property (nonatomic) BOOL hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
+@property (nonatomic, assign) BOOL hiddenPlaceholderImageViewWhenPlayerIsReadyForDisplay;
 
 /// 将要隐藏 placeholderImageView 时, 延迟多少秒才去隐藏
 ///
 /// - 默认为0.8s
-@property (nonatomic) NSTimeInterval delayInSecondsForHiddenPlaceholderImageView;
+@property (nonatomic, assign) NSTimeInterval delayInSecondsForHiddenPlaceholderImageView;
 @end
 
 
@@ -89,8 +90,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseVideoPlayer (VideoFlipTransition)
 @property (nonatomic, strong, null_resettable) id<SJFlipTransitionManager> flipTransitionManager;
 
-@property (nonatomic, readonly) BOOL isFlipTransitioning;
-@property (nonatomic) SJViewFlipTransition flipTransition; // Animated.
+@property (nonatomic, assign, readonly) BOOL isFlipTransitioning;
+@property (nonatomic, assign) SJViewFlipTransition flipTransition; // Animated.
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated;
 - (void)setFlipTransition:(SJViewFlipTransition)t animated:(BOOL)animated completionHandler:(void(^_Nullable)(__kindof SJBaseVideoPlayer *player))completionHandler;
 
@@ -105,8 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // - Time -
 
-@property (nonatomic, readonly) NSTimeInterval currentTime;
-@property (nonatomic, readonly) NSTimeInterval totalTime;
+@property (nonatomic, assign, readonly) NSTimeInterval currentTime;
+@property (nonatomic, assign, readonly) NSTimeInterval totalTime;
 @property (nonatomic, strong, readonly) NSString *currentTimeStr;
 @property (nonatomic, strong, readonly) NSString *totalTimeStr;
 
@@ -115,8 +116,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // - Progress -
 
-@property (nonatomic, readonly) float progress;
-@property (nonatomic, readonly) float bufferProgress;
+@property (nonatomic, assign ,readonly) float progress;
+@property (nonatomic, assign ,readonly) float bufferProgress;
 
 - (NSString *)timeStringWithSeconds:(NSInteger)secs; // format: 00:00:00
 @end
@@ -144,28 +145,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 // - Playback Type -
 
-@property (nonatomic, readonly) SJMediaPlaybackType playbackType;
+@property (nonatomic, assign ,readonly) SJMediaPlaybackType playbackType;
 
 // - Playback Status -
 
 /// 播放状态观察者
-- (id<SJPlayStatusObserver>)getPlayStatusObserver; // 需要对它强引用, 否则观察者会被释放
-/// 播放失败时的错误
-@property (nonatomic, strong, readonly, nullable) NSError *error;
-/// 播放状态
-@property (nonatomic, readonly) SJVideoPlayerPlayStatus playStatus;
-/// 暂停原因
-@property (nonatomic, readonly) SJVideoPlayerPausedReason pausedReason;
-/// 不活跃原因
-@property (nonatomic, readonly) SJVideoPlayerInactivityReason inactivityReason;
+- (id<SJPlayStatusObserver>)getPlayStatusObserver; ///< 需要对它强引用, 否则观察者会被释放
+@property (nonatomic, strong, readonly, nullable) NSError *error; ///< 播放失败时的错误
+
+@property (nonatomic, assign, readonly) SJVideoPlayerPlayStatus playStatus; ///< 播放状态
+
+@property (nonatomic, assign, readonly) SJVideoPlayerPausedReason pausedReason; ///< 暂停原因
+
+@property (nonatomic, assign, readonly) SJVideoPlayerInactivityReason inactivityReason; ///< 不活跃原因
 
 
 // - Play -
 
 /// 刷新
 - (void)refresh;
-/// 初始化完成后, 是否自动播放
-@property (nonatomic) BOOL autoPlayWhenPlayStatusIsReadyToPlay;
+
+@property (nonatomic, assign) BOOL autoPlayWhenPlayStatusIsReadyToPlay; ///< 初始化完成后, 是否自动播放
 /// 播放器是否可以执行`play`
 ///
 /// - 当调用`play`时, 会回调该block, 如果返回YES, 则执行`play`方法, 否之.
@@ -175,8 +175,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// - 默认是0, 即不自动刷新
 /// - 单位是秒
-@property (nonatomic) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
-/// 使播放
+@property (nonatomic, assign) NSTimeInterval delayToAutoRefreshWhenPlayFailed;
+/// 播放
 - (void)play;
 /// 切换`清晰度` (v1.6.5 新增)
 /// - 切换当前播放的视频清晰度
@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否恢复播放, 进入前台时.
 ///
 /// 正常情况下, 进入后台时, 播放器将会暂停. 此属性表示App进入前台后, 播放器是否恢复播放. 默认为NO.
-@property (nonatomic) BOOL resumePlaybackWhenAppDidEnterForeground;
+@property (nonatomic, assign) BOOL resumePlaybackWhenAppDidEnterForeground;
 
 
 // - Pause -
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当您想在后台播放视频时:
 /// 1. 需要设置 videoPlayer.pauseWhenAppDidEnterBackground = NO; (该值默认为YES, 即App进入后台默认暂停).
 /// 2. 前往 `TARGETS` -> `Capability` -> enable `Background Modes` -> select this mode `Audio, AirPlay, and Picture in Picture`
-@property (nonatomic) BOOL pauseWhenAppDidEnterBackground;
+@property (nonatomic,assign) BOOL pauseWhenAppDidEnterBackground;
 /// 使暂停
 - (void)pause;
 
@@ -212,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
 // - Replay -
 
 /// 是否重播过 - 当前的资源.
-@property (nonatomic, readonly, getter=isReplayed) BOOL replayed;
+@property (nonatomic, assign, readonly, getter=isReplayed) BOOL replayed;
 /// 重播
 - (void)replay;
 
@@ -228,20 +228,20 @@ NS_ASSUME_NONNULL_BEGIN
 // - Rate -
 
 /// 调速
-@property (nonatomic) float rate;
+@property (nonatomic,assign) float rate;
 /// 速率改变的回调
 @property (nonatomic, copy, nullable) void(^rateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 
 
 // - Volume -
 
-/// 是否静音🔇
-@property (nonatomic, getter=isMute) BOOL mute;
-@property (nonatomic) float playerVolume;
+
+@property (nonatomic, getter=isMute) BOOL mute; ///< 是否静音🔇
+@property (nonatomic, assign) float playerVolume;
 
 
 /// 是否锁屏
-@property (nonatomic, getter=isLockedScreen) BOOL lockedScreen;
+@property (nonatomic, assign, getter=isLockedScreen) BOOL lockedScreen;
 @end
 
 
@@ -250,11 +250,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseVideoPlayer (DeviceVolumeAndBrightness)
 @property (nonatomic, strong, null_resettable) id<SJDeviceVolumeAndBrightnessManager> deviceVolumeAndBrightnessManager;
 
-@property (nonatomic) float deviceVolume;
-@property (nonatomic) float deviceBrightness;
+@property (nonatomic, assign) float deviceVolume;
+@property (nonatomic, assign) float deviceBrightness;
 
-@property (nonatomic) BOOL disableBrightnessSetting;
-@property (nonatomic) BOOL disableVolumeSetting;
+@property (nonatomic, assign) BOOL disableBrightnessSetting;
+@property (nonatomic, assign) BOOL disableVolumeSetting;
 @end
 
 
@@ -304,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 当调用`vc_viewWillDisappear`时, 将设置为YES
 /// 当调用`vc_viewDidAppear`时, 将设置为NO
-@property (nonatomic) BOOL vc_isDisappeared;
+@property (nonatomic, assign) BOOL vc_isDisappeared;
 
 
 /// v1.6.0 新增
@@ -327,7 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 当前网速
 @property (nonatomic, strong, readonly) NSString *networkSpeedStr;
-@property (nonatomic, readonly) SJNetworkStatus networkStatus;
+@property (nonatomic, assign, readonly) SJNetworkStatus networkStatus;
 @property (nonatomic, copy, nullable) void(^networkStatusDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player);
 @end
 
@@ -407,7 +407,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, null_resettable) id<SJPlayerGestureControl> gestureControl;
 
-@property (nonatomic) SJPlayerDisabledGestures disabledGestures;
+@property (nonatomic,assign) SJPlayerDisabledGestures disabledGestures;
 
 @property (nonatomic, copy, nullable) BOOL(^gestureRecognizerShouldTrigger)(__kindof SJBaseVideoPlayer *player, SJPlayerGestureType type, CGPoint location);
 @end
@@ -440,10 +440,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)controlLayerNeedDisappear;
 
-@property (nonatomic) BOOL disabledControlLayerAppearManager; // default value is NO.
-@property (nonatomic) BOOL controlLayerIsAppeared;
-@property (nonatomic) BOOL pausedToKeepAppearState;
-@property (nonatomic) BOOL controlLayerAutoAppearWhenAssetInitialized; // default value is NO.
+@property (nonatomic, assign) BOOL disabledControlLayerAppearManager; // default value is NO.
+@property (nonatomic, assign) BOOL controlLayerIsAppeared;
+@property (nonatomic, assign) BOOL pausedToKeepAppearState;
+@property (nonatomic, assign) BOOL controlLayerAutoAppearWhenAssetInitialized; // default value is NO.
 @property (nonatomic, copy, nullable) void(^controlLayerAppearStateDidChangeExeBlock)(__kindof SJBaseVideoPlayer *player, BOOL state);
 @end
 
@@ -451,7 +451,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// v2.1.1 新增
 @interface SJBaseVideoPlayer (ModalViewControlller)
 @property (nonatomic, strong, null_resettable) id<SJModalViewControlllerManagerProtocol> modalViewControllerManager;
-@property (nonatomic) BOOL needPresentModalViewControlller;
+@property (nonatomic, assign) BOOL needPresentModalViewControlller;
 
 - (void)presentModalViewControlller;
 - (void)dismissModalViewControlller;
@@ -461,7 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
 // - Auto Manage Player View to Fit On Screen Or Rotation -
 
 @interface SJBaseVideoPlayer (AutoManageViewToFitOnScreenOrRotation)
-@property (nonatomic) BOOL autoManageViewToFitOnScreenOrRotation; // default value is YES.
+@property (nonatomic, assign) BOOL autoManageViewToFitOnScreenOrRotation; // default value is YES.
 @end
 
 
@@ -475,7 +475,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Whether fullscreen or smallscreen, this method does not trigger rotation.
 /// 全屏或小屏, 此方法不触发旋转
 /// Animated
-@property (nonatomic, getter=isFitOnScreen) BOOL fitOnScreen;
+@property (nonatomic, assign, getter=isFitOnScreen) BOOL fitOnScreen;
 
 /// Whether fullscreen or smallscreen, this method does not trigger rotation.
 /// 全屏或小屏, 此方法不触发旋转
@@ -488,7 +488,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - completionHandler : 操作完成的回调
 - (void)setFitOnScreen:(BOOL)fitOnScreen animated:(BOOL)animated completionHandler:(nullable void(^)(__kindof SJBaseVideoPlayer *player))completionHandler;
 
-@property (nonatomic) BOOL useFitOnScreenAndDisableRotation;
+@property (nonatomic, assign) BOOL useFitOnScreenAndDisableRotation;
 @property (nonatomic, copy, nullable) void(^fitOnScreenWillBeginExeBlock)(__kindof SJBaseVideoPlayer *player);
 @property (nonatomic, copy, nullable) void(^fitOnScreenDidEndExeBlock)(__kindof SJBaseVideoPlayer *player);;
 @end

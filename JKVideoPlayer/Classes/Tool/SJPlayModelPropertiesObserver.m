@@ -24,33 +24,33 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPlayModelPropertiesObserver()
-@property (nonatomic, strong, readonly) id<SJPlayModel> playModel;
-@property (nonatomic) CGPoint beforeOffset;
-@property (nonatomic) BOOL isAppeared;
-@property (nonatomic, strong, readonly) SJRunLoopTaskQueue *taskQueue;
-@property (nonatomic) BOOL isScrolling;
+@property (nonatomic, strong) id<SJPlayModel> playModel;
+@property (nonatomic, assign) CGPoint beforeOffset;
+@property (nonatomic, assign) BOOL isAppeared;
+@property (nonatomic, strong) SJRunLoopTaskQueue *taskQueue;
+@property (nonatomic, assign) BOOL isScrolling;
 @end
 
 @implementation SJPlayModelPropertiesObserver
 
-- (instancetype)initWithPlayModel:(__kindof SJPlayModel *)playModel {
++ (instancetype)initWithPlayModel:(__kindof SJPlayModel *)playModel {
     NSParameterAssert(playModel);
     
-    self = [super init];
-    if ( !self ) return nil;
-    _playModel = playModel;
-    _taskQueue = SJRunLoopTaskQueue.queue(@"SJPlayModelObserverRunLoopTaskQueue").delay(3);
-    
-    if ( [playModel isMemberOfClass:[SJPlayModel class]] ) {
-        _isAppeared = YES;
+    SJPlayModelPropertiesObserver *observer = [[self alloc] init];
+    if (observer) {
+        observer.playModel = playModel;
+        observer.taskQueue = SJRunLoopTaskQueue.queue(@"SJPlayModelObserverRunLoopTaskQueue").delay(3);
+        if ( [playModel isMemberOfClass:[SJPlayModel class]] ) {
+            observer.isAppeared = YES;
+        }
+        else {
+            [observer _observeProperties];
+        }
+        
+        [observer refreshAppearState];
     }
-    else {
-        [self _observeProperties];
-    }
-    
-    [self refreshAppearState];
-    
-    return self;
+    return observer;
+
 }
 
 - (void)_observeProperties {

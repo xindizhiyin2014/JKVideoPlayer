@@ -6,6 +6,7 @@
 //
 
 #import "SJPlayerView.h"
+
 NS_ASSUME_NONNULL_BEGIN
 @implementation SJPlayerView
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -17,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    if ( _layoutSubviewsExeBlock ) _layoutSubviewsExeBlock(self);
+    if (self.layoutSubviewsExeBlock ){
+      self.layoutSubviewsExeBlock(self);
+    }
 }
 
 - (void)willMoveToWindow:(nullable UIWindow *)newWindow {
@@ -25,7 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !newWindow )
         return;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ( self->_willMoveToWindowExeBlock ) self->_willMoveToWindowExeBlock(self, newWindow);
+        if (self.willMoveToWindowExeBlock) {
+            self.willMoveToWindowExeBlock(self, newWindow);
+        }
+        
     });
 }
 @end

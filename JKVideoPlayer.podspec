@@ -42,5 +42,6 @@ this is a video player,it will update with the need.
    s.dependency 'Reachability'
    s.dependency 'Masonry'
    s.dependency 'JKSandBoxManager'
+   s.dependency 'JKUIHelper'
    
 end
