@@ -302,7 +302,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"0.1.3.6";
+    return @"0.1.3.7";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -839,7 +839,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 - (void)setDelayToAutoRefreshWhenPlayFailed:(NSTimeInterval)delay {
     _controlInfo->plabackControl.delayToAutoRefreshWhenPlayFailed = delay;
     [_autoRefresh cancel];
-    _autoRefresh = (delay > 0)?[[SJBaseVideoPlayerAutoRefreshController alloc] initWithPlayer:(id)self]:nil;
+    _autoRefresh = (delay > 0)?[SJBaseVideoPlayerAutoRefreshController initWithPlayer:(id)self]:nil;
 }
 - (NSTimeInterval)delayToAutoRefreshWhenPlayFailed {
     return _controlInfo->plabackControl.delayToAutoRefreshWhenPlayFailed;

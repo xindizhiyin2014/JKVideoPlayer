@@ -10,7 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseVideoPlayerAutoRefreshController : NSObject
-- (instancetype)initWithPlayer:(__weak id<SJBaseVideoPlayer>)player;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)initWithPlayer:(__weak id<SJBaseVideoPlayer>)player;
 - (void)cancel;
 @end
 NS_ASSUME_NONNULL_END

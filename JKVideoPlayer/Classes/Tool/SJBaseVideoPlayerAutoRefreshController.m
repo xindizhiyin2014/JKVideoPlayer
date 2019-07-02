@@ -14,6 +14,8 @@
 #import "NSObject+SJObserverHelper.h"
 #endif
 
+#import "SJVideoPlayerMacro.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJBaseVideoPlayerAutoRefreshController ()
@@ -24,33 +26,39 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJBaseVideoPlayerAutoRefreshController
-- (instancetype)initWithPlayer:(__weak id<SJBaseVideoPlayer>)player {
-    self = [super init];
-    if ( !self ) return nil;
-    _player = player;
-    _playStatusObserver = [player getPlayStatusObserver];
-    _reachabilityObserver = [player.reachability getObserver];
-    _registrar = [SJVideoPlayerRegistrar new];
++ (instancetype)initWithPlayer:(__weak id<SJBaseVideoPlayer>)player {
+    SJBaseVideoPlayerAutoRefreshController *refreshController = [[self alloc] init];
+    if (refreshController) {
+       refreshController->_player = player;
+        refreshController->_playStatusObserver = [player getPlayStatusObserver];
+        refreshController->_reachabilityObserver = [player.reachability getObserver];
+        refreshController->_registrar = [SJVideoPlayerRegistrar new];
+        
+        @weakify(refreshController);
+        refreshController->_playStatusObserver.playStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
+            @strongify(refreshController);
+            [refreshController _startOrCancel];
+        };
+        
+        refreshController->_reachabilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability> r, SJNetworkStatus status) {
+            @strongify(refreshController);
+            [refreshController _startOrCancel];
+        };
+        
+        refreshController->_registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+           @strongify(refreshController);
+            [refreshController _startOrCancel];
+        };
+        
+        refreshController->_registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
+            @strongify(refreshController);
+            [refreshController _startOrCancel];
+        };
+        
+        [(id)player sj_addObserver:refreshController forKeyPath:@"URLAsset"];
+    }
+    return refreshController;
     
-    __weak typeof(self) _self = self;
-    _playStatusObserver.playStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
-        [_self _startOrCancel];
-    };
-    
-    _reachabilityObserver.networkStatusDidChangeExeBlock = ^(id<SJReachability> r, SJNetworkStatus status) {
-        [_self _startOrCancel];
-    };
-    
-    _registrar.willEnterForeground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        [_self _startOrCancel];
-    };
-    
-    _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        [_self _startOrCancel];
-    };
-    
-    [(id)player sj_addObserver:self forKeyPath:@"URLAsset"];
-    return self;
 }
 
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
