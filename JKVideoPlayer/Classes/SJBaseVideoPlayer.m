@@ -302,7 +302,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"0.1.3.2";
+    return @"0.1.3.3";
 }
 
 - (nullable __kindof UIViewController *)atViewController {

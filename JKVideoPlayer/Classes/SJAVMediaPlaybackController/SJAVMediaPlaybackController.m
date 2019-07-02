@@ -25,6 +25,7 @@
 #import "SJVideoPlayerRegistrar.h"
 #import "AVAsset+SJAVMediaExport.h"
 #import "NSTimer+SJAssetAdd.h"
+#import "SJVideoPlayerMacro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJAVMediaPlaybackController()
@@ -46,12 +47,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init {
     self = [super init];
-    if ( !self ) return nil;
-    _rate =
-    _volume = 1;
-    _refreshTimeInterval = 0.5;
-    _mainPresenter = [SJAVMediaMainPresenter mainPresenter];
-    [self _observeEvents];
+    if (self){
+        _rate =
+        _volume = 1;
+        _refreshTimeInterval = 0.5;
+        _mainPresenter = [SJAVMediaMainPresenter mainPresenter];
+        [self _observeEvents];
+    }
     return self;
 }
 
@@ -60,9 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_observeEvents {
-    __weak typeof(self) _self = self;
+    @weakify(self);
     sjkvo_observe(_mainPresenter, @"readyForDisplay", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         if ( [self.delegate respondsToSelector:@selector(playbackControllerIsReadyForDisplay:)] ) {
             [self.delegate playbackControllerIsReadyForDisplay:self];
@@ -121,12 +123,12 @@ NS_ASSUME_NONNULL_BEGIN
     
     _registrar = [[SJVideoPlayerRegistrar alloc] init];
     _registrar.didBecomeActive = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         [self _resetMainPresenterIfNeeded];
     };
     _registrar.didEnterBackground = ^(SJVideoPlayerRegistrar * _Nonnull registrar) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         [self _applicationEnterBackgrond];
     };
@@ -169,9 +171,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self addPeriodicTimeObserver];
 }
 - (void)addPeriodicTimeObserver {
-    __weak typeof(self) _self = self;
+    @weakify(self);
     _periodicTimeObserver = [_player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(_refreshTimeInterval, NSEC_PER_SEC) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         if ( [self.delegate respondsToSelector:@selector(playbackController:currentTimeDidChange:)] ) {
             [self.delegate playbackController:self currentTimeDidChange:self.player.sj_getCurrentPlaybackTime];
@@ -184,6 +186,42 @@ NS_ASSUME_NONNULL_BEGIN
         _periodicTimeObserver = nil;
     }
 }
+
+#pragma mark - - - - setter - - - -
+- (void)setVideoGravity:(SJVideoGravity)videoGravity {
+    _mainPresenter.videoGravity = videoGravity;
+}
+
+- (void)setVolume:(float)volume {
+    _volume = volume;
+    _player.sj_playbackVolume = volume;
+}
+
+- (void)setRate:(float)rate {
+    _rate = rate;
+    _player.sj_playbackRate = rate;
+}
+
+- (void)setMute:(BOOL)mute {
+    _mute = mute;
+    _player.sj_muted = mute;
+}
+
+- (void)setMedia:(id<SJMediaModelProtocol> _Nullable)media {
+    [self stop];
+    _media = media;
+    [self _playStatusDidChange];
+}
+
+- (void)setPlayer:(id<SJAVMediaPlayerProtocol> _Nullable)player {
+    [self removePeriodicTimeObserver];
+    _player = player;
+    player.sj_muted = self.mute;
+    player.sj_playbackVolume = self.volume;
+    [self addPeriodicTimeObserver];
+}
+
+#pragma mark - - - - getter - - - -
 - (NSError *_Nullable)error {
     return _player.sj_getError;
 }
@@ -193,9 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SJMediaPlaybackType)playbackType {
     return _player.sj_getPlaybackType;
 }
-- (void)setVideoGravity:(SJVideoGravity)videoGravity {
-    _mainPresenter.videoGravity = videoGravity;
-}
+
 - (SJVideoGravity)videoGravity {
     return _mainPresenter.videoGravity;
 }
@@ -232,18 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isReplayed {
     return _player.sj_isReplayed;
 }
-- (void)setVolume:(float)volume {
-    _volume = volume;
-    _player.sj_playbackVolume = volume;
-}
-- (void)setRate:(float)rate {
-    _rate = rate;
-    _player.sj_playbackRate = rate;
-}
-- (void)setMute:(BOOL)mute {
-    _mute = mute;
-    _player.sj_muted = mute;
-}
+
 - (SJMediaPlaybackPrepareStatus)prepareStatus {
     return (NSInteger)_player.sj_getAVPlayerItemStatus;
 }
@@ -256,20 +281,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self play];
 }
 
-- (void)setMedia:(id<SJMediaModelProtocol> _Nullable)media {
-    [self stop];
-    _media = media;
-    [self _playStatusDidChange];
-}
-
-- (void)setPlayer:(id<SJAVMediaPlayerProtocol> _Nullable)player {
-    [self removePeriodicTimeObserver];
-    _player = player;
-    player.sj_muted = self.mute;
-    player.sj_playbackVolume = self.volume;
-    [self addPeriodicTimeObserver];
-}
-
 - (void)prepareToPlay {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self _prepareToPlay];
@@ -279,9 +290,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_prepareToPlay {
     NSTimeInterval playableLimit = _media.playableLimit;
     if ( playableLimit == 0 || _media.mediaURL == nil ) {
-        __weak typeof(self) _self = self;
+        @weakify(self);
         [SJAVMediaPlayerLoader loadPlayerForMedia:_media completionHandler:^(id<SJMediaModelProtocol>  _Nonnull media, id<SJAVMediaPlayerProtocol>  _Nonnull player) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return;
             if ( media == self.media ) {
                 self.player = player;

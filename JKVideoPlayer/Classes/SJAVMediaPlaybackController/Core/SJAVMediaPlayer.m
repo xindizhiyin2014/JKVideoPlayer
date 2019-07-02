@@ -12,6 +12,7 @@
 #import "NSObject+SJObserverHelper.h"
 #endif
 #import "SJReachability.h"
+#import "SJVideoPlayerMacro.h"
 
 //#define SJTEST_PLAYER
 
@@ -69,30 +70,30 @@ inline static bool isFloatZero(float value) {
 @implementation SJAVMediaPlayer
 @synthesize sj_playbackRate = _sj_playbackRate;
 
-- (instancetype)initWithURL:(NSURL *)URL {
++ (instancetype)initWithURL:(NSURL *)URL {
     return [self initWithURL:URL specifyStartTime:0];
 }
-- (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime {
++ (instancetype)initWithURL:(NSURL *)URL specifyStartTime:(NSTimeInterval)specifyStartTime {
     return [self initWithAVAsset:[AVAsset assetWithURL:URL] specifyStartTime:specifyStartTime];
 }
-- (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime {
++ (instancetype)initWithAVAsset:(__kindof AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime {
     return [self initWithPlayerItem:[[AVPlayerItem alloc] initWithAsset:asset] specifyStartTime:specifyStartTime];
 }
-- (instancetype)initWithPlayerItem:(nullable AVPlayerItem *)item {
++ (instancetype)initWithPlayerItem:(nullable AVPlayerItem *)item {
     return [self initWithPlayerItem:item specifyStartTime:0];
 }
-- (instancetype)initWithPlayerItem:(AVPlayerItem *_Nullable)item specifyStartTime:(NSTimeInterval)specifyStartTime {
-    self = [super initWithPlayerItem:item];
-    if ( self ) {
-        _sj_playbackRate = 1.0;
-        _sj_controlInfo = (SJAVMediaPlaybackControlInfo *)calloc(1, sizeof(SJAVMediaPlaybackControlInfo));
-        _sj_controlInfo->bufferTimeToContinuePlaying = 2;
-        _sj_controlInfo->specifyStartTime = specifyStartTime;
++ (instancetype)initWithPlayerItem:(AVPlayerItem *_Nullable)item specifyStartTime:(NSTimeInterval)specifyStartTime {
+    SJAVMediaPlayer *mediaPlayer = (SJAVMediaPlayer *)[[AVPlayer alloc] initWithPlayerItem:item];
+    if ( mediaPlayer ) {
+        mediaPlayer->_sj_playbackRate = 1.0;
+        mediaPlayer->_sj_controlInfo = (SJAVMediaPlaybackControlInfo *)calloc(1, sizeof(SJAVMediaPlaybackControlInfo));
+        mediaPlayer->_sj_controlInfo->bufferTimeToContinuePlaying = 2;
+        mediaPlayer->_sj_controlInfo->specifyStartTime = specifyStartTime;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self _sj_prepareToPlay];
+            [mediaPlayer _sj_prepareToPlay];
         });
     }
-    return self;
+    return mediaPlayer;
 }
 - (void)dealloc {
 #ifdef DEBUG
@@ -110,79 +111,85 @@ inline static bool isFloatZero(float value) {
     _sj_controlInfo->prepareStatus = SJAVMediaPrepareStatusPreparing;
     
     AVPlayerItem *item = self.currentItem;
-    __weak typeof(self) _self = self;
+    @weakify(self);
     // - prepare -
     sjkvo_observe(item, @"status", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         [self _playerItemStatusDidChange];
     });
     
     // - did play to end time -
     [self sj_observeWithNotification:AVPlayerItemDidPlayToEndTimeNotification target:item usingBlock:^(SJAVMediaPlayer  *self, NSNotification * _Nonnull note) {
+        
         [self _successfullyToPlayEndTime:note];
     }];
     
     [self sj_observeWithNotification:AVPlayerItemFailedToPlayToEndTimeNotification target:item usingBlock:^(SJAVMediaPlayer  *self, NSNotification * _Nonnull note) {
+        
         [self _failedToPlayEndTime:note];
     }];
     
     // - buffer -
     sjkvo_observe(item, @"loadedTimeRanges", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
+        
         if ( !self ) return;
         [self _playerItemLoadedTimeRangesDidChange];
     });
     
     if ( @available(iOS 10.0, *) ) {
         sjkvo_observe(self, @"timeControlStatus", ^(SJAVMediaPlayer *self, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
+            
             self.sj_controlInfo->timeControlStatus = [change[NSKeyValueChangeNewKey] integerValue];
             [self _bufferStatusDidChange];
             [self _playbackStatusDidChange];
         });
     }
     else {
+        @weakify(self);
         sjkvo_observe(item, @"playbackLikelyToKeepUp", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return;
             [self _bufferStatusDidChange];
         });
         sjkvo_observe(item, @"playbackBufferEmpty", NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld, ^(AVPlayerItem *target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return;
             self.sj_controlInfo->isPrerolling = target.isPlaybackBufferEmpty;
             [self _bufferStatusDidChange];
         });
         sjkvo_observe(item, @"playbackBufferFull", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return;
             [self _bufferStatusDidChange];
         });
     }
     sjkvo_observe(self, @"rate", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         [self _rateDidChange];
     });
     sjkvo_observe(item, @"presentationSize", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         [self _postNotificationWithName:SJAVMediaLoadedPresentationSizeNotification];
     });
     sjkvo_observe(item, @"duration", ^(id  _Nonnull target, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
-        __strong typeof(_self) self = _self;
+        @strongify(self);
         if ( !self ) return;
         [self _durationDidChange];
     });
 
     // - interruption -
     [self sj_observeWithNotification:AVAudioSessionInterruptionNotification target:nil usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
+        
         NSDictionary *info = note.userInfo;
         if( (AVAudioSessionInterruptionType)[info[AVAudioSessionInterruptionTypeKey] integerValue] == AVAudioSessionInterruptionTypeBegan ) {
             [self pause];
         }
     }];
     [self sj_observeWithNotification:AVAudioSessionRouteChangeNotification target:nil usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
+        
         NSDictionary *interuptionDict = note.userInfo;
         NSInteger reason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
         if ( reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable ) {
@@ -192,6 +199,7 @@ inline static bool isFloatZero(float value) {
     
     // - playback type -
     [self sj_observeWithNotification:AVPlayerItemNewAccessLogEntryNotification target:item usingBlock:^(SJAVMediaPlayer *self, NSNotification * _Nonnull note) {
+        
         [self _playbackTypeDidLoad];
     }];
 }
@@ -240,10 +248,9 @@ inline static bool isFloatZero(float value) {
                 return;
             }
             
-            // - seek to `specifyStartTime`
-            __weak typeof(self) _self = self;
+            @weakify(self);
             [item seekToTime:CMTimeMakeWithSeconds(specifyStartTime, NSEC_PER_SEC) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
-                __strong typeof(_self) self = _self;
+                @strongify(self);
                 if ( !self ) return;
                 [self _postNotificationWithName:SJAVMediaItemStatusDidChangeNotification];
                 [self _successfullyToPrepare:item];
@@ -525,10 +532,10 @@ inline static bool isFloatZero(float value) {
     }
     
     [self _willSeekingToTime:time];
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [super seekToTime:time completionHandler:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return;
             [self _didEndSeeking];
             if ( completionHandler ) completionHandler(finished);
@@ -542,10 +549,10 @@ inline static bool isFloatZero(float value) {
     }
     
     [self _willSeekingToTime:time];
-    __weak typeof(self) _self = self;
+    @weakify(self);
     [super seekToTime:time toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(_self) self = _self;
+            @strongify(self);
             if ( !self ) return;
             [self _didEndSeeking];
             if ( completionHandler ) completionHandler(finished);
