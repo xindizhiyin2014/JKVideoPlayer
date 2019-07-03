@@ -24,9 +24,7 @@
 - (instancetype)init {
     self = [super init];
     if (self){
-        @weakify(self);
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            @strongify(self);
             [self sj_observeWithNotification:AVAudioSessionRouteChangeNotification target:nil usingBlock:^(SJVideoPlayerRegistrar *_Nonnull self, NSNotification * _Nonnull note) {
                 NSDictionary *interuptionDict = note.userInfo;
                 NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];

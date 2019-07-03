@@ -282,9 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)prepareToPlay {
-    @weakify(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-        @strongify(self);
         [self _prepareToPlay];
     });
 }

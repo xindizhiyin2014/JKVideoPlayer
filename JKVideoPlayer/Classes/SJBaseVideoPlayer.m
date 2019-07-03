@@ -303,7 +303,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"0.1.3.12";
+    return @"0.1.3.13";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -343,9 +343,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     [self _setRotationAbleValue:@(YES)];
     [self rotationManager];
     [self registrar];
-    @weakify(self);
+    
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        @strongify(self);
+        
         [self addInterceptTapGR];
         [self reachability];
         [self gestureControl];
@@ -1446,9 +1446,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( _controlInfo->statusBar.needTmpShow ) return;
     _controlInfo->statusBar.needTmpShow = YES;
     [self.atViewController setNeedsStatusBarAppearanceUpdate];
-    @weakify(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-        @strongify(self);
         self.controlInfo->statusBar.needTmpShow = NO;
     });
 }
@@ -1457,9 +1455,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( _controlInfo->statusBar.needTmpHidden ) return;
     _controlInfo->statusBar.needTmpHidden = YES;
     [self.atViewController setNeedsStatusBarAppearanceUpdate];
-    @weakify(self);
+    
     dispatch_async(dispatch_get_main_queue(), ^{
-        @strongify(self);
+        
         self.controlInfo->statusBar.needTmpHidden = NO;
     });
 }
@@ -1930,11 +1928,11 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
     if ( self.modalViewControllerManager.isTransitioning )
         return;
-    @weakify(self);
+    
     dispatch_async(dispatch_get_main_queue(), ^{
-        @strongify(self);
+        
         [self.modalViewControllerManager dismissModalViewControlllerCompletion:^{
-            @strongify(self);
+            
             [self controlLayerNeedAppear];
             [self.view insertSubview:self.presentView atIndex:0];
             self.rotationManager.superview = self.view;
@@ -2277,8 +2275,9 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( [_playbackController respondsToSelector:@selector(screenshotWithTime:size:completion:)] ) {
         @weakify(self);
         [(id<SJMediaPlaybackScreenshotController>)_playbackController screenshotWithTime:time size:size completion:^(id<SJMediaPlaybackController>  _Nonnull controller, UIImage * _Nullable image, NSError * _Nullable error) {
+            @strongify(self);
             dispatch_async(dispatch_get_main_queue(), ^{
-                @strongify(self);
+                
                 if ( !self ) return ;
                 if ( block ) block(self, image, error);
             });
