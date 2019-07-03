@@ -353,7 +353,9 @@ inline static bool isFloatZero(float value) {
 }
 
 - (void)_playbackTypeDidLoad {
+    @weakify(self);
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        @strongify(self);
         AVPlayerItem *item = self.currentItem;
         AVPlayerItemAccessLogEvent *event = item.accessLog.events.firstObject;
         SJMediaPlaybackType playbackType = SJMediaPlaybackTypeUnknown;
@@ -369,6 +371,7 @@ inline static bool isFloatZero(float value) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            @strongify(self);
             if ( self.sj_controlInfo->playbackType != playbackType ) {
                 self.sj_controlInfo->playbackType = playbackType;
                 [self _postNotificationWithName:SJAVMediaLoadedPlaybackTypeNotification];

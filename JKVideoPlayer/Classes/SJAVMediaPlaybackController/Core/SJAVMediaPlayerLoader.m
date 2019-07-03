@@ -20,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
         if ( target == media && [player sj_getIsPlayed] )
             [player reset];
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ( completionHandler ) completionHandler(media, player);
+            if ( completionHandler ){
+              completionHandler(media, player);
+            }
         });
         return;
     }
@@ -35,7 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
     
     objc_setAssociatedObject(target, _cmd, player, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ( completionHandler ) completionHandler(media, player);
+        if ( completionHandler ){
+          completionHandler(media, player);
+        }
     });
 }
 @end

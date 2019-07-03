@@ -296,13 +296,14 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
 @implementation SJBaseVideoPlayer
 
+@synthesize playStatusDidChangeExeBlock;
 
 + (instancetype)player {
     return [[self alloc] init];
 }
 
 + (NSString *)version {
-    return @"0.1.3.9";
+    return @"0.1.3.10";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
