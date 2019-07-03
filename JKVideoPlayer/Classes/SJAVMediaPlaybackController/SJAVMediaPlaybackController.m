@@ -362,13 +362,11 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 - (void)stop {
-    id<SJAVMediaPlayerProtocol> _Nullable player = _player;
     [self removePeriodicTimeObserver];
-    _player = nil;
     _media = nil;
     _definitionLoader = nil;
     [_mainPresenter removeAllPresenters];
-    [player pause];
+    [_player pause];
 }
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^_Nullable)(BOOL))completionHandler {
     [self.player seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) completionHandler:completionHandler];
