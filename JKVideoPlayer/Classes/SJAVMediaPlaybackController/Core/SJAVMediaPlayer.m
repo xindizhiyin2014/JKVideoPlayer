@@ -95,6 +95,30 @@ inline static bool isFloatZero(float value) {
     }
     return mediaPlayer;
 }
+
+- (void)replaceCurrentURL:(NSURL *)url{
+    [self replaceCurrentURL:url specifyStartTime:0];
+}
+
+- (void)replaceCurrentURL:(NSURL *)url specifyStartTime:(NSTimeInterval)specifyStartTime{
+    AVAsset *asset = [AVAsset assetWithURL:url];
+    [self replaceCurrentAsset:asset specifyStartTime:specifyStartTime];
+}
+- (void)replaceCurrentAsset:(AVAsset *)asset{
+    [self replaceCurrentAsset:asset specifyStartTime:0];
+}
+
+- (void)replaceCurrentAsset:(AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime{
+    AVPlayerItem *item = [[AVPlayerItem alloc] initWithAsset:asset];
+    [self replaceCurrentItemWithPlayerItem:item];
+    self->_sj_controlInfo->specifyStartTime = specifyStartTime;
+    @weakify(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @strongify(self);
+        [self _sj_prepareToPlay];
+    });
+}
+
 - (void)dealloc {
 #ifdef DEBUG
     NSLog(@"%d - %s", (int)__LINE__, __func__);

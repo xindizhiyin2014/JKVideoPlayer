@@ -29,10 +29,19 @@ NS_ASSUME_NONNULL_BEGIN
     
     AVAsset *_Nullable asset = [(id)media respondsToSelector:@selector(avAsset)]?[(id)media avAsset]:nil;
     if ( asset ) {
-        player = [SJAVMediaPlayer initWithAVAsset:asset specifyStartTime:target.specifyStartTime];
+        if (!player) {
+            player = [SJAVMediaPlayer initWithAVAsset:asset specifyStartTime:target.specifyStartTime];
+        }else{
+            [player replaceCurrentAsset:asset specifyStartTime:target.specifyStartTime];
+        }
+        
     }
     else {
-        player = [SJAVMediaPlayer initWithURL:target.mediaURL specifyStartTime:target.specifyStartTime];
+        if (!player) {
+           player = [SJAVMediaPlayer initWithURL:target.mediaURL specifyStartTime:target.specifyStartTime];
+        }else{
+            [player replaceCurrentURL:target.mediaURL specifyStartTime:target.specifyStartTime];
+        }
     }
     
     objc_setAssociatedObject(target, _cmd, player, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
