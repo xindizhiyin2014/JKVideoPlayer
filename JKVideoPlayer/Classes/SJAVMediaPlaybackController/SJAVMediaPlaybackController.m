@@ -369,6 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
     _definitionLoader = nil;
     [_mainPresenter removeAllPresenters];
     [_player pause];
+    [_player replaceCurrentItemWithPlayerItem:nil];
 }
 - (void)seekToTime:(NSTimeInterval)secs completionHandler:(void (^_Nullable)(BOOL))completionHandler {
     [self.player seekToTime:CMTimeMakeWithSeconds(secs, NSEC_PER_SEC) completionHandler:completionHandler];
