@@ -303,7 +303,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"0.1.3.13";
+    return @"0.1.3.15";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -512,7 +512,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 #pragma mark - - - - UIEvent - - - -
 - (void)handleInterceptTapGR:(UITapGestureRecognizer *)tap {
-#warning ???
+//拦截tableView的点击事件
 }
 
 - (void)handleLockStateTapGesture:(UITapGestureRecognizer *)tap {

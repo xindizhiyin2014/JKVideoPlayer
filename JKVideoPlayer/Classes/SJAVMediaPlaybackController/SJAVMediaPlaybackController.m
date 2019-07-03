@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init {
     self = [super init];
     if (self){
-        _rate =
+        _rate = 1;
         _volume = 1;
         _refreshTimeInterval = 0.5;
         _mainPresenter = [SJAVMediaMainPresenter mainPresenter];
@@ -210,7 +210,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setMedia:(id<SJMediaModelProtocol> _Nullable)media {
     [self stop];
     _media = media;
-    [self _playStatusDidChange];
 }
 
 - (void)setPlayer:(id<SJAVMediaPlayerProtocol> _Nullable)player {
@@ -327,7 +326,12 @@ NS_ASSUME_NONNULL_BEGIN
             AVMutableCompositionTrack *audioTrack = [asset addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:0];
             [audioTrack insertTimeRange:sourceRange ofTrack:[source tracksWithMediaType:AVMediaTypeAudio].lastObject atTime:kCMTimeZero error:nil];
             
-            self.player = [SJAVMediaPlayer initWithAVAsset:asset specifyStartTime:media.specifyStartTime];
+            if (!self.player) {
+                self.player = [SJAVMediaPlayer initWithAVAsset:asset specifyStartTime:media.specifyStartTime];
+            }else{
+                [self.player replaceCurrentAsset:asset specifyStartTime:media.specifyStartTime];
+            }
+            
             [self.player sj_setForceDuration:CMTimeGetSeconds(source.duration)];
             [self.player report];
             [self _resetMainPresenterIfNeeded];
