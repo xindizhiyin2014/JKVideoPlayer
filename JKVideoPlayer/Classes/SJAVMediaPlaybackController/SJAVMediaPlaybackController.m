@@ -289,9 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_prepareToPlay {
     NSTimeInterval playableLimit = _media.playableLimit;
     if ( playableLimit == 0 || _media.mediaURL == nil ) {
-        @weakify(self);
         [SJAVMediaPlayerLoader loadPlayerForMedia:_media completionHandler:^(id<SJMediaModelProtocol>  _Nonnull media, id<SJAVMediaPlayerProtocol>  _Nonnull player) {
-            @strongify(self);
             if ( !self ) return;
             if ( media == self.media ) {
                 self.player = player;
@@ -382,9 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !media ) return;
     
     [self _definitionSwitchingStatusDidChange:media status:SJMediaPlaybackSwitchDefinitionStatusSwitching];
-    @weakify(self);
     _definitionLoader = [SJAVMediaDefinitionLoader initWithMedia:media handler:^(SJAVMediaDefinitionLoader * _Nonnull loader, AVPlayerItemStatus status) {
-        @strongify(self);
         if ( !self ) return;
         switch ( status ) {
             case AVPlayerItemStatusFailed: {
@@ -399,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // present
                 SJAVMediaSubPresenter *presenter = [[SJAVMediaSubPresenter alloc] initWithAVPlayer:loader.player.sj_getAVPlayer];
                 [self.mainPresenter insertSubPresenterToBack:presenter];
-                
+                @weakify(self);
                 SJKVOObserverToken __block token = sjkvo_observe(presenter, @"readyForDisplay", ^(SJAVMediaSubPresenter *subPresenter, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change) {
                     @strongify(self);
                     if ( !self ) return;

@@ -109,11 +109,11 @@ inline static bool isFloatZero(float value) {
 }
 
 - (void)replaceCurrentAsset:(AVAsset *)asset specifyStartTime:(NSTimeInterval)specifyStartTime{
+    [self reset];
     AVPlayerItem *item = [[AVPlayerItem alloc] initWithAsset:asset];
     [self.currentItem cancelPendingSeeks];
     [self replaceCurrentItemWithPlayerItem:item];
     self->_sj_controlInfo->specifyStartTime = specifyStartTime;
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         
         [self _sj_prepareToPlay];

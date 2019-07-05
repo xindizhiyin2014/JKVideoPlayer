@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
             [player replaceCurrentURL:target.mediaURL specifyStartTime:target.specifyStartTime];
         }
     }
-    [player reset];
     objc_setAssociatedObject(target, _cmd, player, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( completionHandler ){
