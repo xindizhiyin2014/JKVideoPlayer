@@ -14,18 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)loadPlayerForMedia:(id<SJMediaModelProtocol>)media completionHandler:(void(^_Nullable)(id<SJMediaModelProtocol> media, id<SJAVMediaPlayerProtocol> player))completionHandler {
     id<SJMediaModelProtocol> target = media.originMedia?:media;
     SJAVMediaPlayer *__block _Nullable player = objc_getAssociatedObject(target, _cmd);
-    SJVideoPlayerInactivityReason inactivityReason = player.sj_inactivityReason;
-    BOOL able = inactivityReason != SJVideoPlayerInactivityReasonPlayFailed;
-    if ( player && able ) {
-        if ( target == media && [player sj_getIsPlayed] )
-            [player reset];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ( completionHandler ){
-              completionHandler(media, player);
-            }
-        });
-        return;
-    }
     
     AVAsset *_Nullable asset = [(id)media respondsToSelector:@selector(avAsset)]?[(id)media avAsset]:nil;
     if ( asset ) {
@@ -43,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
             [player replaceCurrentURL:target.mediaURL specifyStartTime:target.specifyStartTime];
         }
     }
-    
+    [player reset];
     objc_setAssociatedObject(target, _cmd, player, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_async(dispatch_get_main_queue(), ^{
         if ( completionHandler ){
