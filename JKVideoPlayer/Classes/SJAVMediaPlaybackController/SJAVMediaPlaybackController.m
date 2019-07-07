@@ -367,6 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
     _definitionLoader = nil;
     [_mainPresenter removeAllPresenters];
     [_player pause];
+    [_player.currentItem.asset cancelLoading];
     [_player.currentItem cancelPendingSeeks];
     [_player replaceCurrentItemWithPlayerItem:nil];
 }

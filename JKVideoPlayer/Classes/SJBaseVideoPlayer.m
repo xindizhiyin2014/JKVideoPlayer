@@ -303,7 +303,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 }
 
 + (NSString *)version {
-    return @"0.1.3.20";
+    return @"0.1.3.21";
 }
 
 - (nullable __kindof UIViewController *)atViewController {
@@ -326,34 +326,35 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
 
 - (instancetype)init {
     self = [super init];
-    if ( !self ) return nil;
-    _controlInfo = (_SJPlayerControlInfo *)calloc(1, sizeof(struct _SJPlayerControlInfo));
-    _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay = YES;
-    _controlInfo->placeholder.delayHidden = 0.8;
-    _controlInfo->scrollControl.pauseWhenScrollDisappeared = YES;
-    _controlInfo->scrollControl.hiddenPlayerViewWhenScrollDisappeared = YES;
-    _controlInfo->scrollControl.resumePlaybackWhenScrollAppeared = YES;
-    _controlInfo->plabackControl.autoPlayWhenPlayStatusIsReadyToPlay = YES; // 是否自动播放, 默认yes
-    _controlInfo->plabackControl.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
-    _controlInfo->floatSmallViewControl.autoDisappearFloatSmallView = YES;
-    self.autoManageViewToFitOnScreenOrRotation = YES;
-    
-    [self view];
-    [self _showOrHiddenPlaceholderImageViewIfNeeded];
-    [self _setRotationAbleValue:@(YES)];
-    [self rotationManager];
-    [self registrar];
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    if (self ){
+        _controlInfo = (_SJPlayerControlInfo *)calloc(1, sizeof(struct _SJPlayerControlInfo));
+        _controlInfo->placeholder.needToHiddenWhenPlayerIsReadyForDisplay = YES;
+        _controlInfo->placeholder.delayHidden = 0.8;
+        _controlInfo->scrollControl.pauseWhenScrollDisappeared = YES;
+        _controlInfo->scrollControl.hiddenPlayerViewWhenScrollDisappeared = YES;
+        _controlInfo->scrollControl.resumePlaybackWhenScrollAppeared = YES;
+        _controlInfo->plabackControl.autoPlayWhenPlayStatusIsReadyToPlay = YES; // 是否自动播放, 默认yes
+        _controlInfo->plabackControl.pauseWhenAppDidEnterBackground = YES; // App进入后台是否暂停播放, 默认yes
+        _controlInfo->floatSmallViewControl.autoDisappearFloatSmallView = YES;
+        self.autoManageViewToFitOnScreenOrRotation = YES;
         
-        [self addInterceptTapGR];
-        [self reachability];
-        [self gestureControl];
-        [self _configAVAudioSession];
-        if (SJBaseVideoPlayer.isEnabledStatistics ){
-          [self.statistics observePlayer:(id)self];
-        }
-    });
+        [self view];
+        [self _showOrHiddenPlaceholderImageViewIfNeeded];
+        [self _setRotationAbleValue:@(YES)];
+        [self rotationManager];
+        [self registrar];
+        
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            
+            [self addInterceptTapGR];
+            [self reachability];
+            [self gestureControl];
+            [self _configAVAudioSession];
+            if (SJBaseVideoPlayer.isEnabledStatistics ){
+              [self.statistics observePlayer:(id)self];
+            }
+        });
+    }
     return self;
 }
 
@@ -1101,9 +1102,7 @@ sj_swizzleMethod(Class cls, SEL originalSelector, SEL swizzledSelector) {
     if ( [self playStatus_isReadyToPlay] ) {
         // auto appear control layer if needed
         if ( !self.isLockedScreen && self.controlLayerAutoAppearWhenAssetInitialized ) {
-            @weakify(self);
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                @strongify(self);
                 if ( !self ) return;
                 [self.controlLayerAppearManager needAppear];
             });
